@@ -43,115 +43,70 @@ def main():
         version='%(prog)s {}'.format(version),
     )
 
-    # common arguments
-    collection_id = ArgumentParser(add_help=False)
-    collection_id.add_argument(
-        'id',
-        help='The unique identifier of the collection',
-    )
-
-    dataset_id = ArgumentParser(add_help=False)
-    dataset_id.add_argument(
-        'id',
-        help='The unique identifier of the dataset',
-    )
-
-    imageset_id = ArgumentParser(add_help=False)
-    imageset_id.add_argument(
-        'id',
-        help='The unique identifier of the imageset',
-    )
-
-    token_arg = ArgumentParser(add_help=False)
-    token_arg.add_argument(
-        '-t',
-        '--token',
-        help='Authentication token',
-    )
-
-    verbose = ArgumentParser(add_help=False)
-    verbose.add_argument(
-        '-v',
-        '--verbose',
-        action='store_true',
-        help='Enable verbose logging',
-    )
+    option_mapper = {
+        'get': {
+            'help': 'Get a resource',
+            'resources': {
+                'collections': collections.get,
+                'dateset': datasets.get,
+                'imageset': imagesets.get,
+            }
+        },
+        'update': {
+            'help': 'Update a resource',
+            'resources': {
+                'collections': collections.update,
+                'dateset': datasets.update,
+                'imageset': imagesets.update,
+            }
+        },
+        'delete': {
+            'help': 'Delete a resource',
+            'resources': {
+                'collections': collections.delete,
+                'dateset': datasets.delete,
+                'imageset': imagesets.delete,
+            }
+        },
+    }
 
     subparsers = parser.add_subparsers()
-    parser_get = subparsers.add_parser('get', help='Get a resource')
-    subparser_get = parser_get.add_subparsers()
-
-    parser_update = subparsers.add_parser('update', help='Update a resource')
-    subparser_update = parser_update.add_subparsers()
-
-    parser_delete = subparsers.add_parser('delete', help='Delete a resource')
-    subparser_delete = parser_delete.add_subparsers()
-
-    # Collections
-    collection_parents = [collection_id, token_arg, verbose]
-    get_collections = subparser_get.add_parser(
-        'collections',
-        parents=[token_arg, verbose],
-    )
-    get_collections.set_defaults(func=collections.getAll)
-
-    update_collections = subparser_update.add_parser(
-        'collections',
-        parents=collection_parents,
-    )
-    update_collections.set_defaults(func=collections.update)
-
-    delete_collections = subparser_delete.add_parser(
-        'collections',
-        parents=collection_parents,
-    )
-    delete_collections.set_defaults(func=collections.delete)
-
-    # Datasets
-    dataset_parents = [dataset_id, token_arg, verbose]
-    get_dataset = subparser_get.add_parser(
-        'dataset',
-        parents=dataset_parents,
-    )
-    get_dataset.set_defaults(func=datasets.get)
-
-    update_dataset = subparser_update.add_parser(
-        'dataset',
-        parents=dataset_parents,
-    )
-    update_dataset.set_defaults(func=datasets.update)
-
-    delete_dataset = subparser_delete.add_parser(
-        'dataset',
-        parents=dataset_parents,
-    )
-    delete_dataset.set_defaults(func=datasets.delete)
-
-    # Imagesets
-    imageset_parents = [imageset_id, token_arg, verbose]
-    get_imageset = subparser_get.add_parser(
-        'imageset',
-        parents=imageset_parents,
-    )
-    get_imageset.set_defaults(func=imagesets.get)
-
-    update_imageset = subparser_update.add_parser(
-        'imageset',
-        parents=imageset_parents,
-    )
-    update_imageset.set_defaults(func=imagesets.update)
-
-    delete_imageset = subparser_delete.add_parser(
-        'imageset',
-        parents=imageset_parents,
-    )
-    delete_imageset.set_defaults(func=imagesets.delete)
+    for action in option_mapper.keys():
+        action_parser = subparsers.add_parser(
+            action,
+            help=option_mapper[action]['help'],
+        )
+        # set the action type so we can work out what was chosen
+        action_parser.set_defaults(action=action)
+        action_parser.add_argument(
+            'resource',
+            choices=['collections', 'dataset', 'imageset'],
+            help='The name of the resource type.'
+        )
+        action_parser.add_argument(
+            'id',
+            help='Resource identifier.',
+        )
+        action_parser.add_argument(
+            '-c',
+            '--config',
+            help='Path to command configuration yaml.',
+        )
+        action_parser.add_argument(
+            '-v',
+            '--verbose',
+            action='store_true',
+            help='Enable verbose logging.',
+        )
+        action_parser.add_argument(
+            '-t',
+            '--token',
+            help='Authentication token.',
+        )
 
     args = parser.parse_args()
 
-    # call sub command
-    if hasattr(args, "func"):
-        args.func(args)
+    option_mapper[args.action]['resources'][args.resource](args)
 
 
 if __name__ == '__main__':

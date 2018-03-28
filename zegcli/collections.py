@@ -10,6 +10,13 @@ def getAll(args):
     log.warn('Get all collections command coming soon.')
 
 
+def get(args):
+    """Get a collection."""
+    log = getLogger(name='cli', verbose=args.verbose)
+    log.info('collection id: {}'.format(args.id))
+    log.warn('Get all collections command coming soon.')
+
+
 def update(args):
     """Update a collection."""
     log = getLogger(name='cli', verbose=args.verbose)
