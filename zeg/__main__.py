@@ -13,6 +13,7 @@ from . import (
     collections,
     datasets,
     imagesets,
+    log,
 )
 
 
@@ -71,7 +72,7 @@ def main():
     }
 
     subparsers = parser.add_subparsers()
-    for action in option_mapper.keys():
+    for action in option_mapper:
         action_parser = subparsers.add_parser(
             action,
             help=option_mapper[action]['help'],
@@ -106,7 +107,12 @@ def main():
 
     args = parser.parse_args()
 
-    option_mapper[args.action]['resources'][args.resource](args)
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
+    else:
+        logger = log.Logger(args.verbose)
+        option_mapper[args.action]['resources'][args.resource](logger, args)
 
 
 if __name__ == '__main__':
