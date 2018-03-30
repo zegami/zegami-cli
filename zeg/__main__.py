@@ -129,7 +129,17 @@ def main():
     if args.token is not None:
         auth = http.TokenEndpointAuth('https://app.zegami.com', args.token)
     session = http.make_session(auth)
-    option_mapper[args.action]['resources'][args.resource](logger, session, args)
+
+    try:
+        option_mapper[args.action]['resources'][args.resource](
+            logger,
+            session,
+            args,
+        )
+    except Exception as e:
+        # unhandled exceptions
+        logger.error(str(e))
+        sys.exit(1)
 
 
 if __name__ == '__main__':

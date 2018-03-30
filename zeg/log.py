@@ -4,8 +4,9 @@
 
 import copy
 
-import yaml
 from colorama import Fore, Style, init
+
+import yaml
 
 
 class Logger(object):
@@ -40,6 +41,7 @@ class Logger(object):
             **kwargs)
 
     def print_json(self, datadict, typename, verb):
+        """Print a JSON file in YAML format."""
         output = copy.deepcopy(datadict)
         dictdata = self.__shorten_arrays(output)
         print("=========================================")
@@ -52,7 +54,10 @@ class Logger(object):
         for key, value in dictdata.items():
             if isinstance(value, list):
                 if len(value) > 3:
-                    restlable = ["...", "and {} more...".format(len(value) - 2), ]
+                    restlable = [
+                        "...",
+                        "and {} more...".format(len(value) - 2),
+                    ]
                     dictdata[key] = value[:2] + restlable + value[-1:]
             if isinstance(value, dict):
                 dictdata[key] = self.__shorten_arrays(value)

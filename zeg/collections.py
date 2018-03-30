@@ -2,6 +2,7 @@
 
 """Collection commands."""
 from colorama import Fore, Style
+
 from . import (
     http,
 )

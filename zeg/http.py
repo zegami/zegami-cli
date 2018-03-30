@@ -2,29 +2,35 @@
 
 """Tools for making http requests."""
 
-import requests
 import sys
+
+import requests
 
 
 API_START_FORMAT = "{prefix}/api/v0/project/{project_id}/"
+
 
 class TokenEndpointAuth(requests.auth.AuthBase):
     """Request auth that adds bearer token for specific endpoint only."""
 
     def __init__(self, endpoint, token):
+        """Initialise auth helper."""
         self.endpoint = endpoint
         self.token = token
 
     def __call__(self, request):
+        """Call auth helper."""
         if request.url.startswith(self.endpoint):
             request.headers["Authorization"] = "Bearer {}".format(self.token)
         return request
 
 
 def get_api_url(url_prefix, project_id):
+    """Get the formatted API prefix."""
     return API_START_FORMAT.format(
         prefix=url_prefix,
         project_id=project_id)
+
 
 def make_session(auth=None):
     """Create a session object with optional auth handling."""

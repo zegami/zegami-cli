@@ -3,9 +3,11 @@
 """Collection commands."""
 import os
 import sys
+from stat import ST_MODE, S_ISREG
+
+from colorama import Fore, Style
 
 import yaml
-from colorama import Fore, Style
 
 from . import (
     http,
@@ -16,8 +18,10 @@ MIMES = {
     ".tab": "text/tab-separated-values",
     ".tsv": "text/tab-separated-values",
     ".csv": "text/csv",
-    ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ".xlsx": "application/vnd.openxmlformats-officedocument" +
+             ".spreadsheetml.sheet",
 }
+
 
 def get(log, session, args):
     """Get a data set."""
@@ -47,8 +51,29 @@ def update(log, session, args):
             yargs = yaml.load(stream)
         except yaml.YAMLError as exc:
             log.error(str(exc))
+            sys.exit(1)
 
-    file_path = yargs['file_config']['path']
+    # get file path
+    file_config = yargs['file_config']
+    if file_config is None:
+        log.error(
+            "Missing {highlight}path{reset} or "
+            "{highlight}directory{reset} parameter".format(
+                highlight=Fore.YELLOW,
+                reset=Style.RESET_ALL,
+            )
+        )
+        sys.exit(1)
+
+    if 'path' in file_config:
+        file_path = file_config['path']
+    elif 'directory' in file_config:
+        file_path = __get_most_recent_file(file_config['directory'])
+
+    if file_path is None:
+        log.error('Data file not found')
+        sys.exit(1)
+
     file_name = os.path.basename(file_path)
     file_ext = os.path.splitext(file_path)[-1]
     file_mime = MIMES.get(file_ext, MIMES['.csv'])
@@ -74,3 +99,17 @@ def delete(log, args):
         id=args.id,
         reset=Style.RESET_ALL)
     log.warn('delete dataset command coming soon.')
+
+
+def __get_most_recent_file(path):
+    """Get the most recent file in a directory."""
+    allowed_ext = tuple(MIMES.keys())
+    files = (os.path.join(path, fn)
+             for fn in os.listdir(path) if fn.endswith(allowed_ext))
+    files = ((os.stat(path), path)
+             for path in files)
+    files = ((os.path.getctime(path), path)
+             for stat, path in files if S_ISREG(stat[ST_MODE]))
+    files = sorted(files, reverse=True)
+    print(files)
+    return files[0][-1] if len(files) > 0 else None
