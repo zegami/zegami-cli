@@ -37,7 +37,16 @@ zeg get dataset [dataset id] --token [API token]
 ## Update a data set
 Update a data set
 ```
-zeg update dataset [dataset id] --token [API token]
+zeg update dataset [dataset id] --config [path to configuration yaml] --token [API token]
+```
+
+```
+# The type of the data set. This needs to be set to 'file'
+dataset_type: file
+# Config for the file data set type
+file_config:
+# Path to the dataset file
+    path: 
 ```
 
 ## Delete a data set

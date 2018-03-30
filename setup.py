@@ -33,7 +33,8 @@ setup(
     ],
     packages=['zeg'],
     install_requires=[
-        'colorama',
+        'colorama==0.3.9',
+        'PyYaml==3.12',
     ],
     entry_points={
         'console_scripts': [
