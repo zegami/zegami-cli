@@ -96,12 +96,17 @@ def delete(log, args):
     log.warn('delete dataset command coming soon.')
 
 
+def _newest_ctime(entry):
+    return -entry.stat().st_ctime, entry.name
+
+
 def _get_most_recent_file(path):
     """Get the most recent file in a directory."""
     allowed_ext = tuple(MIMES.keys())
-    files = [(entry.stat().st_ctime, entry.path)
-             for entry in os.scandir(path)
-             if entry.is_file()
-             and entry.name.endswith(allowed_ext)]
-    files = sorted(files, reverse=True)
-    return files[0][-1] if len(files) > 0 else None
+    files_iter = (
+        entry for entry in os.scandir(path)
+        if entry.is_file() and entry.name.lower().endswith(allowed_ext)
+    )
+    for entry in sorted(files_iter, key=_newest_ctime):
+        return entry
+    return None

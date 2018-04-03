@@ -43,14 +43,14 @@ class Logger(object):
     def print_json(self, datadict, typename, verb):
         """Print a JSON file in YAML format."""
         output = copy.deepcopy(datadict)
-        dictdata = self.__shorten_arrays(output)
+        dictdata = self._shorten_arrays(output)
         print("=========================================")
         print("{} {} with result:".format(verb, typename))
         print("-----------------------------------------")
         print(yaml.dump(dictdata, default_flow_style=False))
         print("=========================================", flush=True)
 
-    def __shorten_arrays(self, dictdata):
+    def _shorten_arrays(self, dictdata):
         for key, value in dictdata.items():
             if isinstance(value, list):
                 if len(value) > 3:
@@ -60,5 +60,5 @@ class Logger(object):
                     ]
                     dictdata[key] = value[:2] + restlable + value[-1:]
             if isinstance(value, dict):
-                dictdata[key] = self.__shorten_arrays(value)
+                dictdata[key] = self._shorten_arrays(value)
         return dictdata

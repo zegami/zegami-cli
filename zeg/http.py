@@ -32,9 +32,9 @@ def get_api_url(url_prefix, project_id):
 
 def make_session(endpoint, token):
     """Create a session object with optional auth handling."""
-    auth = TokenEndpointAuth(endpoint, token)
     session = requests.Session()
-    session.auth = auth
+    if token is not None:
+        session.auth = TokenEndpointAuth(endpoint, token)
     return session
 
 
@@ -61,7 +61,7 @@ def post_file(log, session, url, name, filelike, mime):
 
 
 def delete(log, session, url):
-    """Get a json response."""
+    """Delete a resource."""
     with session.delete(url) as response:
         response.raise_for_status()
 
