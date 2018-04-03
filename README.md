@@ -17,7 +17,7 @@ zeg get collections [collection id] --project [Project Id] --token [API token]
 ```
 
 ## Update a collection
-Update a collection
+Update a collection - *coming soon*.
 ```
 zeg update collections [collection id] --project [Project Id] --token [API token]
 ```
@@ -35,11 +35,12 @@ zeg get dataset [dataset id] --project [Project Id] --token [API token]
 ```
 
 ## Update a data set
-Update a data set
+Update an existing data set with new data.
 ```
 zeg update dataset [dataset id] --project [Project Id] --config [path to configuration yaml] --token [API token]
 ```
 
+The config `yaml` file is used to specify additional configuration for the data set update. It can be set up to either specify the fully qualified path to a `.csv.`, `.tsv` or `.xlsx` file to upload using the `path` property *or* the `directory` property can be used to upload the latest file in a directory location.
 ```
 # The type of data set. This needs to be set to 'file'
 dataset_type: file
@@ -55,25 +56,25 @@ file_config:
 ```
 
 ## Delete a data set
-Delete a data set
+Delete a data set - *coming soon*.
 ```
 zeg delete dataset [dataset id] --project [Project Id] --token [API token]
 ```
 
 ## Get an image set
-Get an image set
+Get an image set - *coming soon*.
 ```
 zeg get imageset [dataset id] --project [Project Id] --token [API token]
 ```
 
 ## Update an image set
-Update an image set
+Update an image set - *coming soon*.
 ```
 zeg update imageset [dataset id] --project [Project Id] --token [API token]
 ```
 
 ## Delete an image set
-Delete an image set
+Delete an image set - *coming soon*.
 ```
 zeg delete imageset [dataset id] --project [Project Id] --token [API token]
 ```
