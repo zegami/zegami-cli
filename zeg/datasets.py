@@ -6,9 +6,8 @@ import sys
 
 from colorama import Fore, Style
 
-import yaml
-
 from . import (
+    config,
     http,
 )
 
@@ -44,12 +43,10 @@ def update(log, session, args):
         log.error('Configuration file path missing')
         sys.exit(1)
 
-    # parse yaml collection configuration
-    with open(args.config, 'r') as stream:
-        yargs = yaml.load(stream)
+    configuration = config.parse_config(args.config)
 
     # get file path
-    file_config = yargs['file_config']
+    file_config = configuration['file_config']
     if file_config is None:
         log.error(
             "Missing {highlight}path{reset} or "
