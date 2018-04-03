@@ -12,6 +12,7 @@ import pkg_resources
 from . import (
     collections,
     datasets,
+    http,
     imagesets,
     log,
 )
@@ -49,7 +50,7 @@ def main():
             'help': 'Get a resource',
             'resources': {
                 'collections': collections.get,
-                'dateset': datasets.get,
+                'dataset': datasets.get,
                 'imageset': imagesets.get,
             }
         },
@@ -57,7 +58,7 @@ def main():
             'help': 'Update a resource',
             'resources': {
                 'collections': collections.update,
-                'dateset': datasets.update,
+                'dataset': datasets.update,
                 'imageset': imagesets.update,
             }
         },
@@ -65,7 +66,7 @@ def main():
             'help': 'Delete a resource',
             'resources': {
                 'collections': collections.delete,
-                'dateset': datasets.delete,
+                'dataset': datasets.delete,
                 'imageset': imagesets.delete,
             }
         },
@@ -94,15 +95,27 @@ def main():
             help='Path to command configuration yaml.',
         )
         action_parser.add_argument(
-            '-v',
-            '--verbose',
-            action='store_true',
-            help='Enable verbose logging.',
+            '-p',
+            '--project',
+            help='The id of the project.',
         )
         action_parser.add_argument(
             '-t',
             '--token',
+            default=None,
             help='Authentication token.',
+        )
+        action_parser.add_argument(
+            '-u',
+            '--url',
+            default='https://app.zegami.com',
+            help='Zegami server address.',
+        )
+        action_parser.add_argument(
+            '-v',
+            '--verbose',
+            action='store_true',
+            help='Enable verbose logging.',
         )
 
     args = parser.parse_args()
@@ -110,9 +123,20 @@ def main():
     if len(sys.argv) == 1:
         parser.print_help(sys.stderr)
         sys.exit(1)
-    else:
-        logger = log.Logger(args.verbose)
-        option_mapper[args.action]['resources'][args.resource](logger, args)
+
+    logger = log.Logger(args.verbose)
+    session = http.make_session(args.url, args.token)
+
+    try:
+        option_mapper[args.action]['resources'][args.resource](
+            logger,
+            session,
+            args,
+        )
+    except Exception as e:
+        # unhandled exceptions
+        logger.error('Unhandled exception: {}'.format(e))
+        sys.exit(1)
 
 
 if __name__ == '__main__':
