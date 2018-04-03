@@ -2,8 +2,6 @@
 
 """Tools for making http requests."""
 
-import sys
-
 import requests
 
 
@@ -32,8 +30,9 @@ def get_api_url(url_prefix, project_id):
         project_id=project_id)
 
 
-def make_session(auth=None):
+def make_session(endpoint, token):
     """Create a session object with optional auth handling."""
+    auth = TokenEndpointAuth(endpoint, token)
     session = requests.Session()
     session.auth = auth
     return session
@@ -42,12 +41,8 @@ def make_session(auth=None):
 def get(log, session, url):
     """Get a json response."""
     with session.get(url) as response:
-        try:
-            response.raise_for_status()
-            return response.json()
-        except requests.RequestException as e:
-            log.error(str(e))
-            sys.exit(1)
+        response.raise_for_status()
+        return response.json()
 
 
 def post_json(session, url, python_obj):
@@ -61,22 +56,14 @@ def post_file(log, session, url, name, filelike, mime):
     """Send a data file."""
     details = (name, filelike, mime)
     with session.post(url, files={'file': details}) as response:
-        try:
-            response.raise_for_status()
-            return response.json()
-        except requests.RequestException as e:
-            log.error(str(e))
-            sys.exit(1)
+        response.raise_for_status()
+        return response.json()
 
 
 def delete(log, session, url):
     """Get a json response."""
     with session.delete(url) as response:
-        try:
-            response.raise_for_status()
-        except requests.RequestException as e:
-            log.error(str(e))
-            sys.exit(1)
+        response.raise_for_status()
 
 
 def put_file(session, url, filelike, mimetype):

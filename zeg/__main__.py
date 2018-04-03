@@ -109,7 +109,7 @@ def main():
             '-u',
             '--url',
             default='https://app.zegami.com',
-            help='Enable verbose logging.',
+            help='Zegami server address.',
         )
         action_parser.add_argument(
             '-v',
@@ -125,10 +125,7 @@ def main():
         sys.exit(1)
 
     logger = log.Logger(args.verbose)
-    auth = None
-    if args.token is not None:
-        auth = http.TokenEndpointAuth('https://app.zegami.com', args.token)
-    session = http.make_session(auth)
+    session = http.make_session(args.url, args.token)
 
     try:
         option_mapper[args.action]['resources'][args.resource](
@@ -138,7 +135,7 @@ def main():
         )
     except Exception as e:
         # unhandled exceptions
-        logger.error(str(e))
+        logger.error('Unhandled exception: {}'.format(e))
         sys.exit(1)
 
 

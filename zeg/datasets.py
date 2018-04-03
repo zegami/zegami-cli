@@ -3,7 +3,6 @@
 """Collection commands."""
 import os
 import sys
-from stat import ST_MODE, S_ISREG
 
 from colorama import Fore, Style
 
@@ -47,11 +46,7 @@ def update(log, session, args):
 
     # parse yaml collection configuration
     with open(args.config, 'r') as stream:
-        try:
-            yargs = yaml.load(stream)
-        except yaml.YAMLError as exc:
-            log.error(str(exc))
-            sys.exit(1)
+        yargs = yaml.load(stream)
 
     # get file path
     file_config = yargs['file_config']
@@ -68,7 +63,7 @@ def update(log, session, args):
     if 'path' in file_config:
         file_path = file_config['path']
     elif 'directory' in file_config:
-        file_path = __get_most_recent_file(file_config['directory'])
+        file_path = _get_most_recent_file(file_config['directory'])
 
     if file_path is None:
         log.error('Data file not found')
@@ -101,15 +96,12 @@ def delete(log, args):
     log.warn('delete dataset command coming soon.')
 
 
-def __get_most_recent_file(path):
+def _get_most_recent_file(path):
     """Get the most recent file in a directory."""
     allowed_ext = tuple(MIMES.keys())
-    files = (os.path.join(path, fn)
-             for fn in os.listdir(path) if fn.endswith(allowed_ext))
-    files = ((os.stat(path), path)
-             for path in files)
-    files = ((os.path.getctime(path), path)
-             for stat, path in files if S_ISREG(stat[ST_MODE]))
+    files = [(entry.stat().st_ctime, entry.path)
+             for entry in os.scandir(path)
+             if entry.is_file()
+             and entry.name.endswith(allowed_ext)]
     files = sorted(files, reverse=True)
-    print(files)
     return files[0][-1] if len(files) > 0 else None
