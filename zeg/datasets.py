@@ -73,6 +73,7 @@ def update(log, session, args):
     file_ext = os.path.splitext(file_path)[-1]
     file_mime = MIMES.get(file_ext, MIMES['.csv'])
 
+    log.debug("File path: {}".format(file_path))
     log.debug("File name: {}".format(file_name))
     log.debug("File mime: {}".format(file_mime))
 
@@ -108,5 +109,5 @@ def _get_most_recent_file(path):
         if entry.is_file() and entry.name.lower().endswith(allowed_ext)
     )
     for entry in sorted(files_iter, key=_newest_ctime):
-        return entry
+        return entry.path
     return None
