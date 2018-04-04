@@ -40,10 +40,10 @@ class Logger(object):
             Fore.RED + format_string + Style.RESET_ALL,
             **kwargs)
 
-    def print_json(self, datadict, typename, verb):
+    def print_json(self, datadict, typename, verb, shorten=True):
         """Print a JSON file in YAML format."""
         output = copy.deepcopy(datadict)
-        dictdata = self._shorten_arrays(output)
+        dictdata = self._shorten_arrays(output) if shorten else output
         print("=========================================")
         print("{} {} with result:".format(verb, typename))
         print("-----------------------------------------")

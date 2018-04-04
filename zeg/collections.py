@@ -10,12 +10,13 @@ from . import (
 
 def get(log, session, args):
     """Get a collection."""
+    coll_id = args.id if args.id.lower() != "all" else ""
     url = "{}collections/{}".format(
         http.get_api_url(args.url, args.project),
-        args.id)
+        coll_id)
     log.debug('GET: {}'.format(url))
     response_json = http.get(log, session, url)
-    log.print_json(response_json, "collection", "get")
+    log.print_json(response_json, "collection", "get", shorten=False)
 
 
 def update(log, args):
