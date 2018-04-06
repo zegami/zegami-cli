@@ -12,7 +12,7 @@ pip install zeg
 
 ## Get a collection
 Get the details of a collection.
-If the `collection id` is unknown, use `all` to list all collections.
+If the `collection id` is excluded then all collections will be listed.
 ```
 zeg get collections [collection id] --project [Project Id] --token [API token]
 ```

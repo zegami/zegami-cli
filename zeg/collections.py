@@ -10,7 +10,7 @@ from . import (
 
 def get(log, session, args):
     """Get a collection."""
-    coll_id = args.id if args.id.lower() != "all" else ""
+    coll_id = args.id if args.id is not None else ""
     url = "{}collections/{}".format(
         http.get_api_url(args.url, args.project),
         coll_id)
