@@ -87,6 +87,8 @@ def main():
         )
         action_parser.add_argument(
             'id',
+            default=None,
+            nargs="?",
             help='Resource identifier.',
         )
         action_parser.add_argument(
