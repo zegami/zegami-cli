@@ -71,7 +71,6 @@ def put_file(session, url, filelike, mimetype):
     headers = {'Content-Type': mimetype}
     with session.put(url, data=filelike, headers=headers) as response:
         response.raise_for_status()
-        return response.json()
 
 
 def put_json(session, url, python_obj):
