@@ -38,7 +38,7 @@ def make_session(endpoint, token):
     return session
 
 
-def get(log, session, url):
+def get(session, url):
     """Get a json response."""
     with session.get(url) as response:
         response.raise_for_status()
@@ -52,7 +52,7 @@ def post_json(session, url, python_obj):
         return response.json()
 
 
-def post_file(log, session, url, name, filelike, mime):
+def post_file(session, url, name, filelike, mime):
     """Send a data file."""
     details = (name, filelike, mime)
     with session.post(url, files={'file': details}) as response:
@@ -60,7 +60,7 @@ def post_file(log, session, url, name, filelike, mime):
         return response.json()
 
 
-def delete(log, session, url):
+def delete(session, url):
     """Delete a resource."""
     with session.delete(url) as response:
         response.raise_for_status()
