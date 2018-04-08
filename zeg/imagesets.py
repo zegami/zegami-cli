@@ -65,10 +65,9 @@ def update(log, session, args):
         )
         sys.exit(1)
 
-    results = None
     with concurrent.futures.ThreadPoolExecutor() as executor:
         paths = _resolve_paths(file_config['paths'])
-        results = {
+        futures = [
             executor.submit(
                 _upload_image,
                 path,
@@ -76,16 +75,15 @@ def update(log, session, args):
                 create_url,
                 complete_url,
                 log,
-            ): path for path in paths
-        }
-    # concurrent.futures.wait(results)
+            ) for path in paths
+        ]
         kwargs = {
-            'total': len(results),
+            'total': len(futures),
             'unit': 'image',
             'unit_scale': True,
             'leave': True
         }
-        for f in tqdm(concurrent.futures.as_completed(results), **kwargs):
+        for f in tqdm(concurrent.futures.as_completed(futures), **kwargs):
             pass
 
 
