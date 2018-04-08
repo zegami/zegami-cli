@@ -34,8 +34,10 @@ setup(
     packages=['zeg'],
     install_requires=[
         'colorama==0.3.9',
+        'pyodbc==4.0.23',
         'PyYaml==3.12',
         'requests<3.0,>=2.15.0',
+        'SQLAlchemy==1.2.6',
         'tqdm==4.20.0',
     ],
     entry_points={
