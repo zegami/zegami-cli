@@ -20,7 +20,19 @@ zeg get collections [collection id] --project [Project Id] --token [API token]
 ## Update a collection
 Update a collection - *coming soon*.
 ```
-zeg update collections [collection id] --project [Project Id] --token [API token]
+zeg update collections [collection id] --project [Project Id] --config [path to configuration yaml] --token [API token]
+```
+
+The config `yaml` file is used to specify additional configuration for the collection update. It can be used to update the collection metadata, like the name or description, or it can perform actions like make public.
+```
+# The type of update. For now this needs to be set to 'publish'
+update_type: publish
+# Config for the publish update type
+publish_config:
+# Flag to indicate if the collection should be published or unpublished
+    publish: true
+# The id of the project to publish to
+    destination_project: public
 ```
 
 ## Delete a collection

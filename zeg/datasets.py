@@ -31,7 +31,7 @@ def get(log, session, args):
         http.get_api_url(args.url, args.project),
         args.id)
     log.debug('GET: {}'.format(url))
-    response_json = http.get(log, session, url)
+    response_json = http.get(session, url)
     log.print_json(response_json, "dataset", "get")
 
 
@@ -78,7 +78,6 @@ def update(log, session, args):
 
     with open(file_path) as f:
         response_json = http.post_file(
-            log,
             session,
             url,
             file_name,
