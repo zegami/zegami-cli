@@ -5,7 +5,7 @@ Zegami is a visual data exploration tool that makes the analysis of large collec
 
 # Installation
 ```
-pip install zegami-cli
+pip3 install zegami-cli[sql]
 ```
 
 # Commands

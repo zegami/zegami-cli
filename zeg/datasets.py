@@ -8,11 +8,10 @@ from tempfile import mkstemp
 
 from colorama import Fore, Style
 
-from sqlalchemy import create_engine, text
-
 from . import (
     config,
     http,
+    sql,
 )
 
 
@@ -120,13 +119,15 @@ def _sql_type_update(log, sql_config):
     if 'query' not in sql_config:
         log.error('Query not found.')
         sys.exit(1)
+    if not sql.have_driver:
+        log.error('No sql driver found, is sqlalchemy installed?')
+        sys.exit(1)
 
-    sql = text(sql_config['query'])
-
-    engine = create_engine(sql_config['connection'], echo=log.verbose)
+    statement = sql.create_statement(sql_config['query'])
+    engine = sql.create_engine(sql_config['connection'], echo=log.verbose)
     mime_type = '.csv'
     with engine.connect() as connection:
-        result = connection.execute(sql)
+        result = connection.execute(statement)
         # write to a comma delimited file
         fd, name = mkstemp(suffix=mime_type, prefix='zeg-dataset')
         with open(fd, 'w') as output:
