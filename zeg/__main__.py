@@ -110,7 +110,6 @@ def main():
             help='The id of the project.',
         )
         _add_standard_args(action_parser)
-        
 
     # login parser
     login_parser = subparsers.add_parser(
