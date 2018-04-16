@@ -127,7 +127,8 @@ def main():
         sys.exit(1)
 
     logger = log.Logger(args.verbose)
-    session = http.make_session(args.url, args.token)
+    token = auth.get_token(args)
+    session = http.make_session(args.url, token)
 
     if args.action == 'login':
         auth.login(

@@ -41,10 +41,31 @@ def login(log, session, args):
     log('User token saved.')
 
 
+def get_token(args=None):
+    """
+    Get the users auth token.
+    If specified in the args then will use that over local config
+    """
+    token = args.token if 'token' in args else None
+    if token is None:
+        # look in user config
+        user_data = os.path.join(_get_user_dir(), '.auth')
+        if os.path.exists(user_data):
+            # see if something is inside
+            with open(user_data) as auth:
+                token = auth.read()
+
+    return token
+
+
+def _get_user_dir():
+    """Get the users data directory location."""
+    app_name = pkg_resources.require('zegami-cli')[0].project_name
+    return user_data_dir(app_name, 'zegami')
+
 def _init_conf_location():
     """Setup the config file location."""
-    app_name = pkg_resources.require('zegami-cli')[0].project_name
-    user_data = user_data_dir(app_name, 'zegami')
+    user_data = _get_user_dir()
     
     if not os.path.exists(user_data):
         os.makedirs(user_data)
