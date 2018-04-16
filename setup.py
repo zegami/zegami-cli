@@ -34,12 +34,16 @@ setup(
     packages=['zeg'],
     install_requires=[
         'colorama==0.3.9',
-        'pyodbc==4.0.23',
         'PyYaml==3.12',
         'requests<3.0,>=2.15.0',
-        'SQLAlchemy==1.2.6',
         'tqdm==4.20.0',
     ],
+    extras_require={
+        'sql': [
+            'pyodbc==4.0.23',
+            'SQLAlchemy==1.2.6',
+        ],
+    },
     entry_points={
         'console_scripts': [
             'zeg=zeg.__main__:main'
