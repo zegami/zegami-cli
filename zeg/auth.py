@@ -7,6 +7,8 @@ from appdirs import user_data_dir
 
 from colorama import Fore, Style
 
+from getpass import getpass
+
 import pkg_resources
 
 from . import (
@@ -17,12 +19,26 @@ from . import (
 
 def login(log, session, args):
     """Authenticate and retrieve a long lived token."""
-    log.warn('Login command coming soon.')
+    # set up user data location
     user_path = _init_conf_location()
     user_data = os.path.join(user_path, '.auth')
+    # get users auth details
+    username = input('Username: ')
+    password = getpass()
+    data = {
+        'username': username,
+        'password': password,
+        'noexpire': True
+    }
+    # time to authenticate
+    url = "{}/oauth/token/".format(args.url)
+    log.debug('POST: {}'.format(url))
+    response = http.post_json(session, url, data)
 
     with open(user_data, 'w') as auth:
-        auth.write('hello world')
+        auth.write(response['token'])
+    
+    log('User token saved.')
 
 
 def _init_conf_location():
