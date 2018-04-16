@@ -114,6 +114,10 @@ file_config:
     paths:
         - an_image.jpg
         - a/directory/path
+# Unique identifier of the collection data set
+dataset_id: 5ad3a99b75f3b30001732f36
+# Name of the column in the dataset that contains the image name
+dataset_column: image_name
 ```
 
 ## Delete an image set

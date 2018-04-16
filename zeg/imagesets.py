@@ -64,6 +64,19 @@ def update(log, session, args):
             )
         )
         sys.exit(1)
+    # check dataset and join column name
+    dataset_id = configuration['dataset_id']
+    if dataset_id is None:
+        log.error(
+            "Dataset id is missing."
+        )
+        sys.exit(1)
+    dataset_column = configuration['dataset_column']
+    if dataset_column is None:
+        log.error(
+            "Dataset join column is missing."
+        )
+        sys.exit(1)
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         paths = _resolve_paths(file_config['paths'])
@@ -85,6 +98,24 @@ def update(log, session, args):
         }
         for f in tqdm(concurrent.futures.as_completed(futures), **kwargs):
             pass
+
+    join_url = "{}datasets/".format(
+        http.get_api_url(args.url, args.project)
+    )
+    log.debug('POST: {}'.format(join_url))
+
+    join_data = {
+        'name': 'join dataset',
+        'source': {
+            'imageset_id': args.id,
+            'dataset_id': dataset_id,
+            'imageset_name_join_to_dataset': {
+                'dataset_column': dataset_column,
+            },
+        },
+    }
+
+    http.post_json(session, join_url, join_data)
 
 
 def delete(log, session, args):
