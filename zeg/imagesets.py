@@ -64,7 +64,13 @@ def update(log, session, args):
             )
         )
         sys.exit(1)
-    # check dataset and join column name
+    # check colleciton id, dataset and join column name
+    collection_id = configuration['collection_id']
+    if collection_id is None:
+        log.error(
+            "Collection id is missing."
+        )
+        sys.exit(1)
     dataset_id = configuration['dataset_id']
     if dataset_id is None:
         log.error(
@@ -115,7 +121,19 @@ def update(log, session, args):
         },
     }
 
-    http.post_json(session, join_url, join_data)
+    # create the join dataset
+    join_response = http.post_json(session, join_url, join_data)
+    collection_url = "{}collections/{}".format(
+        http.get_api_url(args.url, args.project),
+        collection_id,
+    )
+    # update the collection with the new dataset
+    log.debug('PUT: {}'.format(collection_url))
+    # first need to get the collection object
+    collection_response = http.get(session, collection_url)
+    collection = collection_response['collection']
+    collection['join_dataset_id'] = join_response['dataset']['id']
+    http.put_json(session, collection_url, collection)
 
 
 def delete(log, session, args):
