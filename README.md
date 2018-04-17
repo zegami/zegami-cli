@@ -10,6 +10,13 @@ pip3 install zegami-cli[sql]
 
 # Commands
 
+## Login
+The login command promtps for username and password which is then used to retrieve a long-lived API token which can be used for subsequent requests. The token is stored in a file in the currenet users data directory.
+Once retrieved all subsequest commands will use the stored token, unless it is specifically overridden wiht the `--token` option
+```
+zeg login
+```
+
 ## Get a collection
 Get the details of a collection.
 If the `collection id` is excluded then all collections will be listed.

@@ -10,6 +10,7 @@ from textwrap import dedent
 import pkg_resources
 
 from . import (
+    auth,
     collections,
     datasets,
     http,
@@ -46,12 +47,26 @@ def main():
     )
 
     option_mapper = {
+        'delete': {
+            'help': 'Delete a resource',
+            'resources': {
+                'collections': collections.delete,
+                'dataset': datasets.delete,
+                'imageset': imagesets.delete,
+            }
+        },
         'get': {
             'help': 'Get a resource',
             'resources': {
                 'collections': collections.get,
                 'dataset': datasets.get,
                 'imageset': imagesets.get,
+            }
+        },
+        'publish': {
+            'help': 'Publish a resource',
+            'resources': {
+                'collection': collections.publish,
             }
         },
         'update': {
@@ -62,16 +77,9 @@ def main():
                 'imageset': imagesets.update,
             }
         },
-        'delete': {
-            'help': 'Delete a resource',
-            'resources': {
-                'collections': collections.delete,
-                'dataset': datasets.delete,
-                'imageset': imagesets.delete,
-            }
-        },
     }
 
+    # option mapper parser
     subparsers = parser.add_subparsers()
     for action in option_mapper:
         action_parser = subparsers.add_parser(
@@ -82,7 +90,7 @@ def main():
         action_parser.set_defaults(action=action)
         action_parser.add_argument(
             'resource',
-            choices=['collections', 'dataset', 'imageset'],
+            choices=option_mapper[action]['resources'].keys(),
             help='The name of the resource type.'
         )
         action_parser.add_argument(
@@ -101,24 +109,15 @@ def main():
             '--project',
             help='The id of the project.',
         )
-        action_parser.add_argument(
-            '-t',
-            '--token',
-            default=None,
-            help='Authentication token.',
-        )
-        action_parser.add_argument(
-            '-u',
-            '--url',
-            default='https://app.zegami.com',
-            help='Zegami server address.',
-        )
-        action_parser.add_argument(
-            '-v',
-            '--verbose',
-            action='store_true',
-            help='Enable verbose logging.',
-        )
+        _add_standard_args(action_parser)
+
+    # login parser
+    login_parser = subparsers.add_parser(
+        'login',
+        help='Authenticate against the API and store a long lived token',
+    )
+    login_parser.set_defaults(action='login')
+    _add_standard_args(login_parser)
 
     args = parser.parse_args()
 
@@ -127,7 +126,16 @@ def main():
         sys.exit(1)
 
     logger = log.Logger(args.verbose)
-    session = http.make_session(args.url, args.token)
+    token = auth.get_token(args)
+    session = http.make_session(args.url, token)
+
+    if args.action == 'login':
+        auth.login(
+            logger,
+            session,
+            args,
+        )
+        return
 
     try:
         option_mapper[args.action]['resources'][args.resource](
@@ -139,6 +147,27 @@ def main():
         # unhandled exceptions
         logger.error('Unhandled exception: {}'.format(e))
         sys.exit(1)
+
+
+def _add_standard_args(parser):
+    parser.add_argument(
+        '-t',
+        '--token',
+        default=None,
+        help='Authentication token.',
+    )
+    parser.add_argument(
+        '-u',
+        '--url',
+        default='https://app.zegami.com',
+        help='Zegami server address.',
+    )
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action='store_true',
+        help='Enable verbose logging.',
+    )
 
 
 if __name__ == '__main__':

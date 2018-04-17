@@ -24,6 +24,28 @@ def get(log, session, args):
 
 def update(log, session, args):
     """Update a collection."""
+    log('colection id: {highlight}{id}{reset}',
+        highlight=Fore.GREEN,
+        id=args.id,
+        reset=Style.RESET_ALL)
+    log.warn('Update collection command coming soon.')
+
+
+def delete(log, session, args):
+    """Delete a collection."""
+    url = "{}collections/{}".format(
+        http.get_api_url(args.url, args.project),
+        args.id)
+    log.debug('DELETE: {}'.format(url))
+    http.delete(session, url)
+    log('collection {highlight}{id}{reset} deleted',
+        highlight=Fore.GREEN,
+        id=args.id,
+        reset=Style.RESET_ALL)
+
+
+def publish(log, session, args):
+    """Publish a collection."""
     coll_id = args.id if args.id is not None else ""
 
     # check for config
@@ -57,16 +79,3 @@ def update(log, session, args):
 
     response_json = http.post_json(session, url, publish_options)
     log.print_json(response_json, "collection", "update", shorten=False)
-
-
-def delete(log, session, args):
-    """Delete a collection."""
-    url = "{}collections/{}".format(
-        http.get_api_url(args.url, args.project),
-        args.id)
-    log.debug('DELETE: {}'.format(url))
-    http.delete(session, url)
-    log('collection {highlight}{id}{reset} deleted',
-        highlight=Fore.GREEN,
-        id=args.id,
-        reset=Style.RESET_ALL)

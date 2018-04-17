@@ -33,6 +33,7 @@ setup(
     ],
     packages=['zeg'],
     install_requires=[
+        'appdirs==1.4.0',
         'colorama==0.3.9',
         'PyYaml==3.12',
         'requests<3.0,>=2.15.0',
