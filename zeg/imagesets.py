@@ -64,6 +64,25 @@ def update(log, session, args):
             )
         )
         sys.exit(1)
+    # check colleciton id, dataset and join column name
+    collection_id = configuration['collection_id']
+    if collection_id is None:
+        log.error(
+            "Collection id is missing."
+        )
+        sys.exit(1)
+    dataset_id = configuration['dataset_id']
+    if dataset_id is None:
+        log.error(
+            "Dataset id is missing."
+        )
+        sys.exit(1)
+    dataset_column = configuration['dataset_column']
+    if dataset_column is None:
+        log.error(
+            "Dataset join column is missing."
+        )
+        sys.exit(1)
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         paths = _resolve_paths(file_config['paths'])
@@ -85,6 +104,36 @@ def update(log, session, args):
         }
         for f in tqdm(concurrent.futures.as_completed(futures), **kwargs):
             pass
+
+    join_url = "{}datasets/".format(
+        http.get_api_url(args.url, args.project)
+    )
+    log.debug('POST: {}'.format(join_url))
+
+    join_data = {
+        'name': 'join dataset',
+        'source': {
+            'imageset_id': args.id,
+            'dataset_id': dataset_id,
+            'imageset_name_join_to_dataset': {
+                'dataset_column': dataset_column,
+            },
+        },
+    }
+
+    # create the join dataset
+    join_response = http.post_json(session, join_url, join_data)
+    collection_url = "{}collections/{}".format(
+        http.get_api_url(args.url, args.project),
+        collection_id,
+    )
+    # update the collection with the new dataset
+    log.debug('PUT: {}'.format(collection_url))
+    # first need to get the collection object
+    collection_response = http.get(session, collection_url)
+    collection = collection_response['collection']
+    collection['join_dataset_id'] = join_response['dataset']['id']
+    http.put_json(session, collection_url, collection)
 
 
 def delete(log, session, args):
