@@ -104,13 +104,13 @@ zeg delete dataset [dataset id] --project [Project Id] --token [API token]
 ## Get an image set
 Get an image set - *coming soon*.
 ```
-zeg get imageset [dataset id] --project [Project Id] --token [API token]
+zeg get imageset [imageset id] --project [Project Id] --token [API token]
 ```
 
 ## Update an image set
 Update an image set with new images.
 ```
-zeg update imageset [dataset id] --project [Project Id] --config [path to configuration yaml] --token [API token]
+zeg update imageset [imageset id] --project [Project Id] --config [path to configuration yaml] --token [API token]
 ```
 
 The config `yaml` file is used to specify additional configuration for the image set update. The `paths` property is used to specify the location of images to upload and can include both images and directories.
@@ -134,5 +134,5 @@ dataset_column: image_name
 ## Delete an image set
 Delete an image set - *coming soon*.
 ```
-zeg delete imageset [dataset id] --project [Project Id] --token [API token]
+zeg delete imageset [imageset id] --project [Project Id] --token [API token]
 ```
