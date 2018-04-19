@@ -124,7 +124,7 @@ def _sql_type_update(log, sql_config):
         sys.exit(1)
 
     statement = sql.create_statement(sql_config['query'])
-    engine = sql.create_engine(sql_config['connection'], echo=log.verbose)
+    engine = sql.create_engine(sql_config['connection'], log.verbose)
     mime_type = '.csv'
     with engine.connect() as connection:
         result = connection.execute(statement)
