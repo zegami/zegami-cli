@@ -7,6 +7,9 @@ import requests
 
 API_START_FORMAT = "{prefix}/api/v0/project/{project_id}/"
 
+# Max number of api requests to make at once.
+CONCURRENCY = 16
+
 
 class TokenEndpointAuth(requests.auth.AuthBase):
     """Request auth that adds bearer token for specific endpoint only."""

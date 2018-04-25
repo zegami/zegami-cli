@@ -41,11 +41,9 @@ def update(log, session, args):
     create_url = "{}imagesets/{}/image_url".format(
         http.get_api_url(args.url, args.project),
         args.id)
-    complete_url = "{}imagesets/{}/images".format(
+    complete_url_base = "{}imagesets/{}/images/".format(
         http.get_api_url(args.url, args.project),
         args.id)
-    log.debug('POST: {}'.format(create_url))
-    log.debug('POST: {}'.format(complete_url))
 
     # check for config
     if 'config' not in args:
@@ -84,7 +82,7 @@ def update(log, session, args):
         )
         sys.exit(1)
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
+    with concurrent.futures.ThreadPoolExecutor(http.CONCURRENCY) as executor:
         paths = _resolve_paths(file_config['paths'])
         futures = [
             executor.submit(
@@ -92,9 +90,9 @@ def update(log, session, args):
                 path,
                 session,
                 create_url,
-                complete_url,
+                complete_url_base + str(i),
                 log,
-            ) for path in paths
+            ) for i, path in enumerate(paths)
         ]
         kwargs = {
             'total': len(futures),
@@ -177,6 +175,7 @@ def _upload_image(path, session, create_url, complete_url, log):
         }
         try:
             # First create file object
+            log.debug('POST: {}'.format(create_url))
             create = http.post_json(session, create_url, info)
             # Post file to storage location
             url = create["url"]
@@ -184,6 +183,7 @@ def _upload_image(path, session, create_url, complete_url, log):
                 url = 'https://storage.googleapis.com{}'.format(url)
             http.put_file(session, url, f, file_mime)
             # confirm
-            http.post_json(session, complete_url, info)
+            log.debug('PUT: {}'.format(complete_url))
+            http.put_json(session, complete_url, info)
         except Exception as ex:
             log.error("Upload failed: {}".format(ex))
