@@ -84,7 +84,7 @@ def update(log, session, args):
         )
         sys.exit(1)
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
+    with concurrent.futures.ThreadPoolExecutor(http.CONCURRENCY) as executor:
         paths = _resolve_paths(file_config['paths'])
         futures = [
             executor.submit(
