@@ -15,7 +15,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='zegami-cli',
-    version='0.5.0',
+    version='0.6.0',
     description='Command Line Interface for Zegami',
     long_description=long_description,
     url='https://github.com/zegami/zegami-cli',
