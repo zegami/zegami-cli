@@ -35,6 +35,7 @@ setup(
     install_requires=[
         'appdirs==1.4.0',
         'colorama==0.3.9',
+        'jsonschema==2.6.0',
         'PyYaml==3.12',
         'requests<3.0,>=2.15.0',
         'tqdm==4.20.0',
@@ -44,6 +45,9 @@ setup(
             'pyodbc==4.0.23',
             'SQLAlchemy==1.2.6',
         ],
+        'test': [
+            'flake8==3.5.0',
+        ]
     },
     entry_points={
         'console_scripts': [

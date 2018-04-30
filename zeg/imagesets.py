@@ -56,33 +56,10 @@ def update(log, session, args):
 
     # get image paths
     file_config = configuration['file_config']
-    if file_config is None:
-        log.error(
-            "Missing {highlight}paths{reset} parameter".format(
-                highlight=Fore.YELLOW,
-                reset=Style.RESET_ALL,
-            )
-        )
-        sys.exit(1)
     # check colleciton id, dataset and join column name
     collection_id = configuration['collection_id']
-    if collection_id is None:
-        log.error(
-            "Collection id is missing."
-        )
-        sys.exit(1)
     dataset_id = configuration['dataset_id']
-    if dataset_id is None:
-        log.error(
-            "Dataset id is missing."
-        )
-        sys.exit(1)
     dataset_column = configuration['dataset_column']
-    if dataset_column is None:
-        log.error(
-            "Dataset join column is missing."
-        )
-        sys.exit(1)
 
     with concurrent.futures.ThreadPoolExecutor(http.CONCURRENCY) as executor:
         paths = _resolve_paths(file_config['paths'])

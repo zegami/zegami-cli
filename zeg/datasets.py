@@ -61,15 +61,6 @@ def update(log, session, args):
             file_name,
             file_mime
         ) = _sql_type_update(log, configuration['sql_config'])
-    else:
-        log.error(
-            "Missing {highlight}path{reset} or "
-            "{highlight}directory{reset} parameter".format(
-                highlight=Fore.YELLOW,
-                reset=Style.RESET_ALL,
-            )
-        )
-        sys.exit(1)
 
     log.debug("File path: {}".format(file_path))
     log.debug("File name: {}".format(file_name))
@@ -113,12 +104,6 @@ def _file_type_update(log, file_config):
 
 def _sql_type_update(log, sql_config):
     """Query database and convert to csv file."""
-    if 'connection' not in sql_config:
-        log.error('Connection string not found.')
-        sys.exit(1)
-    if 'query' not in sql_config:
-        log.error('Query not found.')
-        sys.exit(1)
     if not sql.have_driver:
         log.error('No sql driver found, is sqlalchemy installed?')
         sys.exit(1)

@@ -1,0 +1,99 @@
+openapi: "3.0"
+info:
+  version: 1.0.0
+  title: CLI configuration
+host: "app.zegami.com"
+type: object
+properties:
+    # Data set config
+    dataset_type:
+      type: string
+      enum:
+        - file
+        - sql
+    file_config:
+      type: object
+      properties:
+        path:
+          type: string
+        directory:
+          type: string
+        paths:
+          type: array
+          items:
+            type: string
+    sql_config:
+      type: object
+      properties:
+        connection:
+          type: string
+        query:
+          type: string
+      required:
+        - connection
+        - query
+    # Image set config
+    imageset_type:
+      type: string
+      enum:
+        - file
+    collection_id:
+      type: string
+      pattern: ^[0-9a-fA-F]{24}$
+    dataset_id:
+      type: string
+      pattern: ^[0-9a-fA-F]{24}$
+    dataset_column:
+      type: string
+    # publish collection config
+    update_type:
+      type: string
+      enum:
+        - publish
+    publish_config:
+      type: object
+      properties:
+        publish:
+          type: boolean
+        destination_project:
+          type: string
+      required:
+        - publish
+        - destination_project
+oneOf:
+  - properties:
+      dataset_type:
+        enum:
+          - file
+      file_config:
+        oneOf:
+        - required:
+            - path
+        - required:
+            - directory
+    required:
+      - file_config
+  - properties:
+      dataset_type:
+        enum:
+          - sql
+    required:
+      - sql_config
+  - properties:
+      imageset_type:
+        enum:
+          - file
+      file_config:
+        required:
+          - paths
+    required:
+      - file_config
+      - collection_id
+      - dataset_id
+      - dataset_column
+  - properties:
+      update_type:
+        enum:
+          - publish
+    required:
+      - publish_config
