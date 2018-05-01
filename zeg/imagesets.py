@@ -1,15 +1,14 @@
 # Copyright 2018 Zegami Ltd
 
 """Collection commands."""
+
 import concurrent.futures
 import os
 import sys
 import uuid
 
 from colorama import Fore, Style
-
 from tqdm import tqdm
-
 
 from . import (
     config,
