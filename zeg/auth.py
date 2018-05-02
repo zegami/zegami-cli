@@ -1,11 +1,11 @@
 # Copyright 2018 Zegami Ltd
 
 """Auth commands."""
+
 import os
 from getpass import getpass
 
 from appdirs import user_data_dir
-
 import pkg_resources
 
 from . import (

@@ -5,7 +5,6 @@
 import copy
 
 from colorama import Fore, Style, init
-
 import yaml
 
 
