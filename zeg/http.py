@@ -41,43 +41,47 @@ def make_session(endpoint, token):
     return session
 
 
+def handle_response(response):
+    if response.status_code == 400:
+        response.reason = response.content.decode("utf-8")
+        response.raise_for_status()
+    if response.content.startswith(b"{"):
+        return response.json()
+
+
 def get(session, url):
     """Get a json response."""
     with session.get(url) as response:
-        response.raise_for_status()
-        return response.json()
+        return handle_response(response)
 
 
 def post_json(session, url, python_obj):
     """Send a json request and decode json response."""
     with session.post(url, json=python_obj) as response:
-        response.raise_for_status()
-        return response.json()
+        return handle_response(response)
 
 
 def post_file(session, url, name, filelike, mime):
     """Send a data file."""
     details = (name, filelike, mime)
     with session.post(url, files={'file': details}) as response:
-        response.raise_for_status()
-        return response.json()
+        return handle_response(response)
 
 
 def delete(session, url):
     """Delete a resource."""
     with session.delete(url) as response:
-        response.raise_for_status()
+        return handle_response(response)
 
 
 def put_file(session, url, filelike, mimetype):
     """Put binary content and decode json respose."""
     headers = {'Content-Type': mimetype}
     with session.put(url, data=filelike, headers=headers) as response:
-        response.raise_for_status()
+        return handle_response(response)
 
 
 def put_json(session, url, python_obj):
     """Put json content and decode json response."""
     with session.put(url, json=python_obj) as response:
-        response.raise_for_status()
-        return response.json()
+        return handle_response(response)
