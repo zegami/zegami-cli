@@ -46,7 +46,6 @@ def _update_file_imageset(log, session, args, configuration):
     log.debug('POST: {}'.format(complete_url))
 
     # get image paths
-    print("got")
     file_config = configuration['file_config']
     # check colleciton id, dataset and join column name
 
