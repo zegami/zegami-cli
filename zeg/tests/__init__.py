@@ -1,5 +1,5 @@
 # Copyright 2018 Zegami Ltd
-"""Init."""
+"""Test implementation of the python requests interface."""
 
 import io
 import json

@@ -2,13 +2,35 @@
 
 """Tools for making http requests."""
 
-import requests
+import requests.auth
 
 
 API_START_FORMAT = "{prefix}/api/v0/project/{project_id}/"
 
 # Max number of api requests to make at once.
 CONCURRENCY = 16
+
+
+class ClientError(Exception):
+    """Failure when using http api."""
+
+    def __init__(self, response, try_json=True):
+        self.code = response.status_code
+        if try_json:
+            try:
+                body = response.json()
+            except ValueError:
+                body = response.content
+        else:
+            body = response.content
+        self.body = body
+
+    def __repr__(self):
+        return '<{} {} {}>'.format(
+            self.__class__.__name__, self.code, self.body)
+
+    def __str__(self):
+        return '{} {!r}'.format(self.code, self.body)
 
 
 class TokenEndpointAuth(requests.auth.AuthBase):
@@ -42,11 +64,13 @@ def make_session(endpoint, token):
 
 
 def handle_response(response):
-    if response.status_code == 400:
-        response.reason = response.content.decode("utf-8")
-        response.raise_for_status()
-    if response.content.startswith(b"{"):
-        return response.json()
+    if response.status_code != 200:
+        raise ClientError(response)
+    try:
+        json = response.json()
+    except ValueError:
+        raise ClientError(response, try_json=False)
+    return json
 
 
 def get(session, url):

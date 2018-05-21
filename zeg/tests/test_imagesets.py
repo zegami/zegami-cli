@@ -7,7 +7,7 @@ from .. import imagesets
 
 
 class ImagesetTestCase(HTTPBaseTestCase):
-    def test__update_to_url_imageset(self):
+    def test_update_to_url_imageset(self):
         session = self.make_session(200, {
             'imageset': {
                 "test": "data"
@@ -18,6 +18,19 @@ class ImagesetTestCase(HTTPBaseTestCase):
             "dataset_column": "foo",
             'dataset_id': "my ds id"
         }
+        exp_imageset = {
+            'name': 'Imageset created by CLI',
+            'source':
+                {
+                    'dataset_id': "my ds id",
+                    'transfer':
+                        {
+                            'url': {
+                                'dataset_column': 'foo'}
+                        }
+                }
+        }
+
         imagesets._update_to_url_imageset(
             session, configuration, ims_url
         )
@@ -25,18 +38,6 @@ class ImagesetTestCase(HTTPBaseTestCase):
             session.adapters["test:"].log,
             [('PUT',
               'test:my-test',
-              {
-                  'source':
-                      {
-                          'dataset_id': "my ds id",
-                          'transfer':
-                              {
-                                  'url':
-                                      {
-                                          'dataset_column': 'foo'
-                                      }
-                              }
-                      }
-              },
+              exp_imageset,
               'application/json')]
         )
