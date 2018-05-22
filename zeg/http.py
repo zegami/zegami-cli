@@ -64,8 +64,10 @@ def make_session(endpoint, token):
 
 
 def handle_response(response):
-    if response.status_code != 200:
+    if response.status_code >= 300:
         raise ClientError(response)
+    elif response.status_code == 204:
+        return None
     try:
         json = response.json()
     except ValueError:
