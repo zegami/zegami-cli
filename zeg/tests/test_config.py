@@ -1,3 +1,7 @@
+# Copyright 2018 Zegami Ltd
+
+"""Config tests."""
+
 import unittest
 from unittest.mock import patch, mock_open
 
