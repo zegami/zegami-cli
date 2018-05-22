@@ -6,94 +6,119 @@ host: "app.zegami.com"
 type: object
 properties:
     # Data set config
-    dataset_type:
-      type: string
-      enum:
-        - file
-        - sql
-    file_config:
-      type: object
-      properties:
-        path:
+  dataset_type:
+    type: string # enums are further down, dont need to repeat here
+  file_config:
+    type: object
+    properties:
+      path:
+        type: string
+      directory:
+        type: string
+      paths:
+        type: array
+        items:
           type: string
-        directory:
-          type: string
-        paths:
-          type: array
-          items:
-            type: string
-    sql_config:
-      type: object
-      properties:
-        connection:
-          type: string
-        query:
-          type: string
-      required:
-        - connection
-        - query
-    # Image set config
-    imageset_type:
-      type: string
-      enum:
-        - file
-    collection_id:
-      type: string
-      pattern: ^[0-9a-fA-F]{24}$
-    dataset_id:
-      type: string
-      pattern: ^[0-9a-fA-F]{24}$
-    dataset_column:
-      type: string
-    # publish collection config
-    update_type:
-      type: string
-      enum:
-        - publish
-    publish_config:
-      type: object
-      properties:
-        publish:
-          type: boolean
-        destination_project:
-          type: string
-      required:
-        - publish
-        - destination_project
-oneOf:
-  - properties:
+  sql_config:
+    type: object
+    properties:
+      connection:
+        type: string
+      query:
+        type: string
+    required:
+    - connection
+    - query
+  # Image set config
+  imageset_type:
+    type: string # enums are further down, dont need to repeat here
+  collection_id:
+    type: string
+    pattern: ^[0-9a-fA-F]{24}$
+  dataset_id:
+    type: string
+    pattern: ^[0-9a-fA-F]{24}$
+  dataset_column:
+    type: string
+  # publish collection config
+  update_type:
+    type: string
+    enum:
+    - publish
+    - imageset_update
+    - dataset_update
+    - collection_create
+  publish_config:
+    type: object
+    properties:
+      publish:
+        type: boolean
+      destination_project:
+        type: string
+    required:
+    - publish
+    - destination_project
+definitions:
+  file_dataset:
+    properties:
       dataset_type:
         enum:
-          - file
+        - file
       file_config:
         oneOf:
         - required:
-            - path
+          - path
         - required:
-            - directory
+          - directory
     required:
-      - file_config
-  - properties:
+    - file_config
+  sql_dataset:
+    properties:
       dataset_type:
         enum:
-          - sql
+        - sql
     required:
-      - sql_config
-  - properties:
+    - sql_config
+  file_imageset_properties:
+    properties:
       imageset_type:
         enum:
-          - file
+        - file
       file_config:
         required:
-          - paths
-    required:
+        - paths
+  url_imageset_properties:
+    properties:
+      imageset_type:
+        enum:
+        - url
+anyOf:
+- oneOf:
+  - $ref: '#/definitions/file_dataset'
+  - $ref: '#/definitions/sql_dataset'
+- oneOf:
+  - allOf:
+    - $ref: '#/definitions/file_imageset_properties'
+    - required:
       - file_config
       - collection_id
       - dataset_id
       - dataset_column
+      - imageset_type
+  - allOf:
+    - $ref: '#/definitions/url_imageset_properties'
+    - required:
+      - collection_id
+      - dataset_id
+      - dataset_column
+      - imageset_type
+- oneOf:
   - properties:
       update_type:
         enum:
-          - publish
+        - publish
     required:
-      - publish_config
+    - publish_config
+    - update_type
+
+

@@ -18,7 +18,6 @@ def load_config(path):
     """Load yaml collection configuration."""
     with open(path, 'r') as stream:
         return yaml.load(stream)
-    return None
 
 
 def validate_config(configuration):

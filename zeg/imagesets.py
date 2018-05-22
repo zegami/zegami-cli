@@ -35,8 +35,7 @@ def get(log, session, args):
     log.warn('Get imageset command coming soon.')
 
 
-def update(log, session, args):
-    """Update an image set."""
+def _update_file_imageset(log, session, args, configuration):
     create_url = "{}imagesets/{}/image_url".format(
         http.get_api_url(args.url, args.project),
         args.id)
@@ -46,19 +45,9 @@ def update(log, session, args):
     log.debug('POST: {}'.format(create_url))
     log.debug('POST: {}'.format(complete_url))
 
-    # check for config
-    if 'config' not in args:
-        log.error('Configuration file path missing')
-        sys.exit(1)
-
-    configuration = config.parse_config(args.config)
-
     # get image paths
     file_config = configuration['file_config']
     # check colleciton id, dataset and join column name
-    collection_id = configuration['collection_id']
-    dataset_id = configuration['dataset_id']
-    dataset_column = configuration['dataset_column']
 
     with concurrent.futures.ThreadPoolExecutor(http.CONCURRENCY) as executor:
         paths = _resolve_paths(file_config['paths'])
@@ -81,6 +70,9 @@ def update(log, session, args):
         for f in tqdm(concurrent.futures.as_completed(futures), **kwargs):
             pass
 
+
+def _update_join_dataset(
+        log, args, dataset_id, dataset_column, session, collection_id):
     join_url = "{}datasets/".format(
         http.get_api_url(args.url, args.project)
     )
@@ -110,6 +102,68 @@ def update(log, session, args):
     collection = collection_response['collection']
     collection['join_dataset_id'] = join_response['dataset']['id']
     http.put_json(session, collection_url, collection)
+
+
+def get_from_dict(data_dict, maplist):
+    for k in maplist:
+        data_dict = data_dict[k]
+    return data_dict
+
+
+def check_can_update(ims_type, ims):
+    features = {
+        "file": ["source", "upload"],
+        "url": ["source", "transfer", "url"],
+    }
+    try:
+        get_from_dict(ims, features[ims_type])
+    except KeyError:
+        if len(ims.get("images", [])) != 0:
+            raise ValueError(
+                "Chosen imageset already has images, cannot change type")
+
+
+def update(log, session, args):
+    """Update an image set."""
+    # check for config
+    if 'config' not in args:
+        log.error('Configuration file path missing')
+        sys.exit(1)
+
+    configuration = config.parse_config(args.config)
+    ims_type = configuration["imageset_type"]
+    ims_id = args.id
+    ims_url = "{}imagesets/{}".format(
+        http.get_api_url(args.url, args.project),
+        ims_id,
+    )
+    ims = http.get(session, ims_url)["imageset"]
+    check_can_update(ims_type, ims)
+    if ims_type == "url":
+        _update_to_url_imageset(session, configuration, ims_url)
+    elif ims_type == "file":
+        _update_file_imageset(log, session, args, configuration)
+    collection_id = configuration['collection_id']
+    dataset_id = configuration['dataset_id']
+    dataset_column = configuration['dataset_column']
+    _update_join_dataset(
+        log, args, dataset_id, dataset_column, session, collection_id)
+
+
+def _update_to_url_imageset(session, configuration, ims_url):
+    dataset_column = configuration['dataset_column']
+    ims = {
+        "name": "Imageset created by CLI",
+        "source": {
+            "dataset_id": configuration['dataset_id'],
+            "transfer": {
+                "url": {
+                    "dataset_column": dataset_column
+                }
+            }
+        }
+    }
+    http.put_json(session, ims_url, ims)
 
 
 def delete(log, session, args):

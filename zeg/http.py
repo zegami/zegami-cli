@@ -2,13 +2,35 @@
 
 """Tools for making http requests."""
 
-import requests
+import requests.auth
 
 
 API_START_FORMAT = "{prefix}/api/v0/project/{project_id}/"
 
 # Max number of api requests to make at once.
 CONCURRENCY = 16
+
+
+class ClientError(Exception):
+    """Failure when using http api."""
+
+    def __init__(self, response, try_json=True):
+        self.code = response.status_code
+        if try_json:
+            try:
+                body = response.json()
+            except ValueError:
+                body = response.content
+        else:
+            body = response.content
+        self.body = body
+
+    def __repr__(self):
+        return '<{} {} {}>'.format(
+            self.__class__.__name__, self.code, self.body)
+
+    def __str__(self):
+        return '{} {!r}'.format(self.code, self.body)
 
 
 class TokenEndpointAuth(requests.auth.AuthBase):
@@ -41,43 +63,49 @@ def make_session(endpoint, token):
     return session
 
 
+def handle_response(response):
+    if response.status_code != 200:
+        raise ClientError(response)
+    try:
+        json = response.json()
+    except ValueError:
+        raise ClientError(response, try_json=False)
+    return json
+
+
 def get(session, url):
     """Get a json response."""
     with session.get(url) as response:
-        response.raise_for_status()
-        return response.json()
+        return handle_response(response)
 
 
 def post_json(session, url, python_obj):
     """Send a json request and decode json response."""
     with session.post(url, json=python_obj) as response:
-        response.raise_for_status()
-        return response.json()
+        return handle_response(response)
 
 
 def post_file(session, url, name, filelike, mime):
     """Send a data file."""
     details = (name, filelike, mime)
     with session.post(url, files={'file': details}) as response:
-        response.raise_for_status()
-        return response.json()
+        return handle_response(response)
 
 
 def delete(session, url):
     """Delete a resource."""
     with session.delete(url) as response:
-        response.raise_for_status()
+        return handle_response(response)
 
 
 def put_file(session, url, filelike, mimetype):
     """Put binary content and decode json respose."""
     headers = {'Content-Type': mimetype}
     with session.put(url, data=filelike, headers=headers) as response:
-        response.raise_for_status()
+        return handle_response(response)
 
 
 def put_json(session, url, python_obj):
     """Put json content and decode json response."""
     with session.put(url, json=python_obj) as response:
-        response.raise_for_status()
-        return response.json()
+        return handle_response(response)

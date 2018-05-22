@@ -113,7 +113,13 @@ Update an image set with new images.
 zeg update imageset [imageset id] --project [Project Id] --config [path to configuration yaml] --token [API token]
 ```
 
-The config `yaml` file is used to specify additional configuration for the image set update. The `paths` property is used to specify the location of images to upload and can include both images and directories.
+The config `yaml` file is used to specify additional configuration for the image set update.
+
+### File imageset
+
+The `paths` property is used to specify the location of images to upload and can include both images and directories.
+
+
 ```
 # The type of image set. for now this needs to be set to 'file'
 imageset_type: file
@@ -130,6 +136,23 @@ dataset_id: 5ad3a99b75f3b30001732f36
 # Name of the column in the dataset that contains the image name
 dataset_column: image_name
 ```
+
+### URL imageset
+
+The dataset_column property is used to set the column where the url is stored. You will need to include the full image url e.g. https://zegami.com/wp-content/uploads/2018/01/weatherall.svg
+
+```
+# The type of image set. for now this needs to be set to 'url'
+imageset_type: url
+# Unique identifier of the collection
+collection_id: 5ad3a99b75f3b30001732f36
+# Unique identifier of the collection data set
+dataset_id: 5ad3a99b75f3b30001732f36
+# Name of the column in the dataset that contains the image url
+dataset_column: image_name
+```
+
+
 
 ## Delete an image set
 Delete an image set - *coming soon*.

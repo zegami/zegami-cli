@@ -44,6 +44,12 @@ def delete(log, session, args):
         reset=Style.RESET_ALL)
 
 
+def init(log, session, args):
+    url = "{}collections/".format(
+        http.get_api_url(args.url, args.project))
+    log.debug('INIT: {}'.format(url))
+
+
 def publish(log, session, args):
     """Publish a collection."""
     coll_id = args.id if args.id is not None else ""
