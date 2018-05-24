@@ -3,7 +3,6 @@
 """Tools for making http requests."""
 
 import requests.auth
-import simplejson.errors
 
 API_START_FORMAT = "{prefix}/api/v0/project/{project_id}/"
 
@@ -19,7 +18,7 @@ class ClientError(Exception):
         if try_json:
             try:
                 body = response.json()
-            except (ValueError, simplejson.errors.JSONDecodeError):
+            except ValueError:
                 body = response.content
         else:
             body = response.content
@@ -71,7 +70,7 @@ def handle_response(response):
         return None
     try:
         json = response.json()
-    except (ValueError, simplejson.errors.JSONDecodeError):
+    except ValueError:
         raise ClientError(response, try_json=False)
     return json
 
