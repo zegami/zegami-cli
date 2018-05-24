@@ -3,7 +3,7 @@
 """Tools for making http requests."""
 
 import requests.auth
-
+import simplejson.errors
 
 API_START_FORMAT = "{prefix}/api/v0/project/{project_id}/"
 
@@ -19,7 +19,7 @@ class ClientError(Exception):
         if try_json:
             try:
                 body = response.json()
-            except ValueError:
+            except (ValueError, simplejson.errors.JSONDecodeError):
                 body = response.content
         else:
             body = response.content
@@ -66,11 +66,12 @@ def make_session(endpoint, token):
 def handle_response(response):
     if response.status_code >= 300:
         raise ClientError(response)
-    elif response.status_code == 204:
+    elif (response.status_code == 204 or
+          response.status_code == 200 and not response.content):
         return None
     try:
         json = response.json()
-    except ValueError:
+    except (ValueError, simplejson.errors.JSONDecodeError):
         raise ClientError(response, try_json=False)
     return json
 
