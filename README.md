@@ -30,7 +30,7 @@ Update a collection - *coming soon*.
 ## Delete a collection
 Delete a collection
 ```
-zeg update collections [collection id] --project [Project Id] --token [API token]
+zeg delete collections [collection id] --project [Project Id] --token [API token]
 ```
 
 ## Publish a collection
