@@ -96,10 +96,9 @@ def _file_type_update(log, file_config):
         log.error('Data file not found.')
         sys.exit(1)
 
-    file_name = os.path.basename(file_path)
     file_ext = os.path.splitext(file_path)[-1]
     file_mime = MIMES.get(file_ext, MIMES['.csv'])
-    return (file_name, file_ext, file_mime)
+    return (file_path, file_ext, file_mime)
 
 
 def _sql_type_update(log, sql_config):
