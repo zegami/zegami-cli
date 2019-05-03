@@ -159,7 +159,7 @@ def _add_standard_args(parser):
     parser.add_argument(
         '-u',
         '--url',
-        default='https://app.zegami.com',
+        default='https://zegami.com',
         help='Zegami server address.',
     )
     parser.add_argument(
