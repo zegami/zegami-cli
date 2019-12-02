@@ -120,5 +120,3 @@ anyOf:
     required:
     - publish_config
     - update_type
-
-

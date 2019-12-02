@@ -83,12 +83,12 @@ def _update_join_dataset(
         'source': {
             'imageset_id': args.id,
             'dataset_id': dataset_id,
-            'imageset_name_join_to_dataset': {
+            'imageset_to_dataset': {
                 'dataset_column': dataset_column,
             },
         },
     }
-
+    log.debug('POST (join dataset): {}'.format(join_url))
     # create the join dataset
     join_response = http.post_json(session, join_url, join_data)
     collection_url = "{}collections/{}".format(
@@ -96,11 +96,28 @@ def _update_join_dataset(
         collection_id,
     )
     # update the collection with the new dataset
-    log.debug('PUT: {}'.format(collection_url))
+    log.debug('GET (collection): {}'.format(collection_url))
     # first need to get the collection object
     collection_response = http.get(session, collection_url)
     collection = collection_response['collection']
-    collection['join_dataset_id'] = join_response['dataset']['id']
+    dz_json_join_url = "{}datasets/{}".format(
+        http.get_api_url(
+            args.url, args.project, collection["dz_json_dataset_id"])
+    )
+    log.debug('GET (dz json): {}'.format(dz_json_join_url))
+    dz_json_join = http.get(session, dz_json_join_url)
+    join_id = join_response['dataset']['id']
+    for_create = {
+        "name": dz_json_join["name"],
+        "source": dz_json_join["source"],
+    }
+    for_create["source"]["dataset_id"] = join_id
+    log.debug('POST: {}'.format(join_url))
+    ds_response = http.post_json(session, join_url, join_data)
+
+    collection['imageset_dataset_join_id'] = join_id
+    collection['dz_json_dataset_id'] = ds_response["dataset"]['id']
+    log.debug('PUT: {}'.format(collection_url))
     http.put_json(session, collection_url, collection)
 
 

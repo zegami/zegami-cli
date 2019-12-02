@@ -63,10 +63,12 @@ def make_session(endpoint, token):
 
 
 def handle_response(response):
+    is_204 = response.status_code == 204
+    is_200 = response.status_code == 200
+
     if response.status_code >= 300:
         raise ClientError(response)
-    elif (response.status_code == 204 or
-          response.status_code == 200 and not response.content):
+    elif (is_204 or is_200 and not response.content):
         return None
     try:
         json = response.json()
