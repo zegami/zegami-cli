@@ -72,7 +72,7 @@ dataset_type: file
 # Config for the file data set type
 file_config:
 # Path to the dataset file
-    path: 
+    path:
 # Or path to a directory that contains data files.
 # Only the latest file that matches the accepted extensions (.csv, .tsv, .xlsx)
 # will be uploaded. This is useful for creating collections based on
@@ -90,7 +90,7 @@ dataset_type: sql
 # Config for the sql data set type
 sql_config:
 # The connection string.
-    connection: 
+    connection:
 # SQL query
     query:
 ```
@@ -125,7 +125,7 @@ The `paths` property is used to specify the location of images to upload and can
 imageset_type: file
 # Config for the file image set type
 file_config:
-# A collection of paths. Paths can be to both images and directories 
+# A collection of paths. Paths can be to both images and directories
     paths:
         - an_image.jpg
         - a/directory/path
@@ -158,4 +158,18 @@ dataset_column: image_name
 Delete an image set - *coming soon*.
 ```
 zeg delete imageset [imageset id] --project [Project Id] --token [API token]
+```
+
+
+# Developer
+
+## Tests
+Setup tests:
+```
+pip install -r requirements/test.txt
+```
+
+Run tests:
+```
+python3 -m unittest discover .
 ```
