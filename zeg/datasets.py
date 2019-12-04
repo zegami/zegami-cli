@@ -46,7 +46,7 @@ def update(log, session, args):
         args.id)
 
     log.debug('POST: {}'.format(url_url))
-    log.debug('PUT: {}'.format(replace_url))
+
 
     # check for config
     if 'config' not in args:
@@ -59,19 +59,20 @@ def update(log, session, args):
     if 'file_config' in configuration:
         (
             file_path,
-            file_name,
+            extension,
             file_mime
         ) = _file_type_update(log, configuration['file_config'])
     elif 'sql_config' in configuration:
         (
             file_path,
-            file_name,
+            extension,
             file_mime
         ) = _sql_type_update(log, configuration['sql_config'])
 
     log.debug("File path: {}".format(file_path))
-    log.debug("File name: {}".format(file_name))
+    log.debug("File extension: {}".format(extension))
     log.debug("File mime: {}".format(file_mime))
+    file_name = os.path.basename(file_path)
 
     with open(file_path) as f:
         blob_id = str(uuid.uuid4())
@@ -87,15 +88,19 @@ def update(log, session, args):
         # Post file to storage location
         url = create["url"]
         if url.startswith("/"):
-            url = 'https://storage.googleapis.com{}'.format(url)
+            url = 'https://zegami.com{}'.format(url)
+        log.debug('PUT (file content): {}'.format(url))
         http.put_file(session, url, f, file_mime)
         # confirm
-        current = http.get(session, url)["dataset"]
+        log.debug('GET (dataset): {}'.format(replace_url))
+        current = http.get(session, replace_url)["dataset"]
         current["source"].pop("schema", None)
         current["source"]["upload"] = {
             "name": file_name,
         }
         current["source"]["blob_id"] = blob_id
+        log.debug('PUT (dataset): {}'.format(replace_url))
+        http.put_json(session, replace_url, current)
         log.print_json(current, "dataset", "update")
 
 
