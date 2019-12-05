@@ -23,6 +23,7 @@ MIMES = {
     ".gif": "image/gif",
     ".tif": "image/tiff",
     ".tiff": "image/tiff",
+    ".dcm": "application/dicom",
 }
 
 
