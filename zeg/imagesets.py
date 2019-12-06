@@ -142,6 +142,7 @@ def check_can_update(ims_type, ims):
     features = {
         "file": ["source", "upload"],
         "url": ["source", "transfer", "url"],
+        "azure_storage_container": ["source", "transfer", "url"],
     }
     try:
         get_from_dict(ims, features[ims_type])
@@ -149,6 +150,10 @@ def check_can_update(ims_type, ims):
         if len(ims.get("images", [])) != 0:
             raise ValueError(
                 "Chosen imageset already has images, cannot change type")
+
+
+# def _build_config_for_azure_container(config):
+#     config["url_pattern"] =
 
 
 def update(log, session, args):
@@ -171,6 +176,9 @@ def update(log, session, args):
         _update_to_url_imageset(session, configuration, ims_url)
     elif ims_type == "file":
         _update_file_imageset(log, session, args, configuration)
+    elif ims_type == "azure_storage_container"
+        configuration = _build_config_for_azure_container(configuration)
+        _update_to_url_imageset(session, configuration, ims_url)
     collection_id = configuration['collection_id']
     dataset_id = configuration['dataset_id']
     dataset_column = configuration['dataset_column']

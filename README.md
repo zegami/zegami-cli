@@ -150,9 +150,26 @@ collection_id: 5ad3a99b75f3b30001732f36
 dataset_id: 5ad3a99b75f3b30001732f36
 # Name of the column in the dataset that contains the image url
 dataset_column: image_name
+# Url pattern - python format string where {} is the name of the image name (from data file)
+url_pattern: https://example.com/images/{}?accesscode=abc3e20423423497
 ```
 
+### Azure storage imageset
 
+```
+# The type of image set. for now this needs to be set to 'url'
+imageset_type: azure_storage_container
+# Name of the container
+container_name: my_azure_blobs
+# Unique identifier of the collection
+collection_id: 5ad3a99b75f3b30001732f36
+# Unique identifier of the collection data set
+dataset_id: 5ad3a99b75f3b30001732f36
+# Name of the column in the dataset that contains the image url
+dataset_column: image_name
+
+# Note that the storage account connection string should also be made available via environment variable AZURE_STORAGE_CONNECTION_STRING
+```
 
 ## Delete an image set
 Delete an image set - *coming soon*.
