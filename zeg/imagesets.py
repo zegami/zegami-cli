@@ -13,6 +13,7 @@ from tqdm import tqdm
 from . import (
     config,
     http,
+    cloudprovider,
 )
 
 
@@ -152,10 +153,6 @@ def check_can_update(ims_type, ims):
                 "Chosen imageset already has images, cannot change type")
 
 
-# def _build_config_for_azure_container(config):
-#     config["url_pattern"] =
-
-
 def update(log, session, args):
     """Update an image set."""
     # check for config
@@ -176,8 +173,9 @@ def update(log, session, args):
         _update_to_url_imageset(session, configuration, ims_url)
     elif ims_type == "file":
         _update_file_imageset(log, session, args, configuration)
-    elif ims_type == "azure_storage_container"
-        configuration = _build_config_for_azure_container(configuration)
+    elif ims_type == "azure_storage_container":
+        sign_func = cloudprovider.azure.generate_signed_url
+        configuration["url_pattern"] = sign_func(config["container_name"])
         _update_to_url_imageset(session, configuration, ims_url)
     collection_id = configuration['collection_id']
     dataset_id = configuration['dataset_id']

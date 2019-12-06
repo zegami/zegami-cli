@@ -1,10 +1,12 @@
-import time
-import uuid
-import hmac
 import base64
-import hashlib
-import urllib
 from datetime import datetime, timedelta
+import hmac
+import hashlib
+import os
+import time
+import urllib
+import uuid
+
 from azure.storage import (
     AccessPolicy,
     ResourceTypes,
@@ -18,16 +20,19 @@ from azure.storage.blob import (
     PublicAccess,
 )
 
-AZURE_ACC_NAME = '<account_name>'
-AZURE_PRIMARY_KEY = '<account_key>'
-AZURE_CONTAINER = '<container_name>'
 
-def generate_sas_with_sdk():
+def generate_signed_url(azure_container):
+    connection_string = os.environ.get(
+        'AZURE_STORAGE_CONNECTION_STRING'
+    )
+    return generate_sas_with_sdk(connection_string, azure_container)
+
+
+def generate_sas_with_sdk(connection_string, azure_container):
     block_blob_service = BlockBlobService(connection_string)
     sas_url = block_blob_service.generate_container_shared_access_signature(
         AZURE_CONTAINER,
         BlobPermissions.READ,
         datetime.utcnow() + timedelta(hours=1)
     )
-    #print sas_url
-    print 'https://'+ block_blob_service.account_name +'.blob.core.windows.net/'+ AZURE_CONTAINER +'/{}?'+ sas_url
+    return 'https://'+ block_blob_service.account_name +'.blob.core.windows.net/'+ azure_container +'/{}?'+ sas_url
