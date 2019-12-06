@@ -145,6 +145,8 @@ def main():
         )
     except Exception as e:
         # unhandled exceptions
+        if args.verbose:
+            raise e
         logger.error('Unhandled exception: {}'.format(e))
         sys.exit(1)
 

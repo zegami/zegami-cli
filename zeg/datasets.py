@@ -1,10 +1,12 @@
 # Copyright 2018 Zegami Ltd
 
 """Collection commands."""
+
 import os
 import sys
 from datetime import datetime
 from tempfile import mkstemp
+import uuid
 
 from colorama import Fore, Style
 
@@ -19,8 +21,8 @@ MIMES = {
     ".tab": "text/tab-separated-values",
     ".tsv": "text/tab-separated-values",
     ".csv": "text/csv",
-    ".xlsx": "application/vnd.openxmlformats-officedocument" +
-             ".spreadsheetml.sheet",
+    ".xlsx": ("application/vnd.openxmlformats-officedocument"
+              ".spreadsheetml.sheet"),
 }
 
 
@@ -36,10 +38,14 @@ def get(log, session, args):
 
 def update(log, session, args):
     """Update a data set."""
-    url = "{}datasets/{}/file/".format(
+    url_url = "{}imagesets/{}/image_url".format(
         http.get_api_url(args.url, args.project),
         args.id)
-    log.debug('POST: {}'.format(url))
+    replace_url = "{}datasets/{}/".format(
+        http.get_api_url(args.url, args.project),
+        args.id)
+
+    log.debug('POST: {}'.format(url_url))
 
     # check for config
     if 'config' not in args:
@@ -52,28 +58,49 @@ def update(log, session, args):
     if 'file_config' in configuration:
         (
             file_path,
-            file_name,
+            extension,
             file_mime
         ) = _file_type_update(log, configuration['file_config'])
     elif 'sql_config' in configuration:
         (
             file_path,
-            file_name,
+            extension,
             file_mime
         ) = _sql_type_update(log, configuration['sql_config'])
 
     log.debug("File path: {}".format(file_path))
-    log.debug("File name: {}".format(file_name))
+    log.debug("File extension: {}".format(extension))
     log.debug("File mime: {}".format(file_mime))
+    file_name = os.path.basename(file_path)
 
     with open(file_path) as f:
-        response_json = http.post_file(
-            session,
-            url,
-            file_name,
-            f,
-            file_mime)
-        log.print_json(response_json, "dataset", "update")
+        blob_id = str(uuid.uuid4())
+        info = {
+            "image": {
+                "blob_id": blob_id,
+                "name": file_name,
+                "size": os.path.getsize(file_path),
+                "mimetype": file_mime
+            }
+        }
+        create = http.post_json(session, url_url, info)
+        # Post file to storage location
+        url = create["url"]
+        if url.startswith("/"):
+            url = 'https://storage.googleapis.com{}'.format(url)
+        log.debug('PUT (file content): {}'.format(url))
+        http.put_file(session, url, f, file_mime)
+        # confirm
+        log.debug('GET (dataset): {}'.format(replace_url))
+        current = http.get(session, replace_url)["dataset"]
+        current["source"].pop("schema", None)
+        current["source"]["upload"] = {
+            "name": file_name,
+        }
+        current["source"]["blob_id"] = blob_id
+        log.debug('PUT (dataset): {}'.format(replace_url))
+        http.put_json(session, replace_url, current)
+        log.print_json(current, "dataset", "update")
 
 
 def delete(log, args):

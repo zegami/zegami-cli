@@ -7,6 +7,7 @@ import unittest
 
 import requests.adapters
 
+from .. import log
 
 JSON_TYPE = 'application/json'
 
@@ -64,3 +65,12 @@ class HTTPBaseTestCase(unittest.TestCase):
         adapter = ResolverAdapter(canned_answer)
         session.mount('test:', adapter)
         return session
+
+
+class FakeLogger(log.Logger):
+    def __init__(self, verbose=False):
+        super(FakeLogger, self).__init__(verbose)
+        self.entries = []
+
+    def __call__(self, format_string, **kwargs):
+        self.entries.append(format_string.format(**kwargs))
