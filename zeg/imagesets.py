@@ -12,8 +12,8 @@ from tqdm import tqdm
 
 from . import (
     config,
+    azure_blobs,
     http,
-    cloudprovider,
 )
 
 
@@ -174,8 +174,8 @@ def update(log, session, args):
     elif ims_type == "file":
         _update_file_imageset(log, session, args, configuration)
     elif ims_type == "azure_storage_container":
-        sign_func = cloudprovider.azure.generate_signed_url
-        configuration["url_pattern"] = sign_func(config["container_name"])
+        configuration["url_pattern"] = azure_blobs.generate_signed_url(
+            configuration["container_name"])
         _update_to_url_imageset(session, configuration, ims_url)
     collection_id = configuration['collection_id']
     dataset_id = configuration['dataset_id']
@@ -185,15 +185,17 @@ def update(log, session, args):
 
 
 def _update_to_url_imageset(session, configuration, ims_url):
-    dataset_column = configuration['dataset_column']
+    keys = ["dataset_column", "url_pattern"]
+    url_conf = {
+        key: configuration.get(key)
+        for key in keys if key in configuration
+    }
     ims = {
         "name": "Imageset created by CLI",
         "source": {
             "dataset_id": configuration['dataset_id'],
             "transfer": {
-                "url": {
-                    "dataset_column": dataset_column
-                }
+                "url": url_conf,
             }
         }
     }
