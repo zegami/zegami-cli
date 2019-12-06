@@ -73,10 +73,10 @@ def _update_file_imageset(log, session, args, configuration):
 
 def _update_join_dataset(
         log, args, dataset_id, dataset_column, session, collection_id):
-    join_url = "{}datasets/".format(
+    dataset_create_url = "{}datasets/".format(
         http.get_api_url(args.url, args.project)
     )
-    log.debug('POST: {}'.format(join_url))
+    log.debug('POST: {}'.format(dataset_create_url))
 
     join_data = {
         'name': 'join dataset',
@@ -88,35 +88,45 @@ def _update_join_dataset(
             },
         },
     }
-    log.debug('POST (join dataset): {}'.format(join_url))
+    log.debug('POST (join dataset): {}'.format(dataset_create_url))
     # create the join dataset
-    join_response = http.post_json(session, join_url, join_data)
+    join_response = http.post_json(session, dataset_create_url, join_data)
     collection_url = "{}collections/{}".format(
         http.get_api_url(args.url, args.project),
         collection_id,
     )
+    join_id = join_response['dataset']['id']
     # update the collection with the new dataset
     log.debug('GET (collection): {}'.format(collection_url))
+
     # first need to get the collection object
     collection_response = http.get(session, collection_url)
     collection = collection_response['collection']
     dz_json_join_url = "{}datasets/{}".format(
-        http.get_api_url(
-            args.url, args.project, collection["dz_json_dataset_id"])
+        http.get_api_url(args.url, args.project),
+        collection["dz_json_dataset_id"]
     )
+
+    # Get existing dz json join dataset (get tilesize etc from this)
     log.debug('GET (dz json): {}'.format(dz_json_join_url))
     dz_json_join = http.get(session, dz_json_join_url)
-    join_id = join_response['dataset']['id']
+    dz_json_join_id = join_response['dataset']['id']
+
+    # create new dz json based on existing
     for_create = {
-        "name": dz_json_join["name"],
-        "source": dz_json_join["source"],
+        "name": dz_json_join['dataset']["name"],
+        "source": dz_json_join['dataset']["source"],
     }
     for_create["source"]["dataset_id"] = join_id
-    log.debug('POST: {}'.format(join_url))
-    ds_response = http.post_json(session, join_url, join_data)
 
+    # Add new dz json dataset, which will become the used one after processing
+    log.debug('POST: {}'.format(dataset_create_url))
+    dz_json_response = http.post_json(session, dataset_create_url, for_create)
+
+    # TODO wait until processing finished before switching to new dz_json
+    # Point collection at new dz json
     collection['imageset_dataset_join_id'] = join_id
-    collection['dz_json_dataset_id'] = ds_response["dataset"]['id']
+    collection['dz_json_dataset_id'] = dz_json_response["dataset"]['id']
     log.debug('PUT: {}'.format(collection_url))
     http.put_json(session, collection_url, collection)
 
