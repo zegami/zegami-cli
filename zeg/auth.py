@@ -34,7 +34,7 @@ def login(log, session, args):
     with open(user_data, 'w') as auth:
         auth.write(response['token'])
 
-    log('User token saved.')
+    log('User token saved to {}.'.format(user_data))
 
 
 def get_token(args=None):
