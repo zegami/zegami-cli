@@ -36,7 +36,7 @@ setup(
         'appdirs==1.4.3',
         'colorama==0.3.9',
         'jsonschema==3.1.0',
-        'PyYaml==5.1.1',
+        'PyYaml==5.2',
         'requests<3.0,>=2.15.0',
         'tqdm==4.20.0',
     ],
