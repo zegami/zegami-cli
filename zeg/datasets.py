@@ -47,7 +47,6 @@ def update(log, session, args):
 
     log.debug('POST: {}'.format(url_url))
 
-
     # check for config
     if 'config' not in args:
         log.error('Configuration file path missing')
@@ -88,7 +87,7 @@ def update(log, session, args):
         # Post file to storage location
         url = create["url"]
         if url.startswith("/"):
-            url = 'https://zegami.com{}'.format(url)
+            url = 'https://storage.googleapis.com{}'.format(url)
         log.debug('PUT (file content): {}'.format(url))
         http.put_file(session, url, f, file_mime)
         # confirm
