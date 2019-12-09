@@ -31,7 +31,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
-    packages=['zeg'],
+    packages=['zeg', 'zeg.tests'],
     install_requires=[
         'appdirs==1.4.3',
         'colorama==0.3.9',
