@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 from . import (
     config,
+    azure_blobs,
     http,
 )
 
@@ -111,7 +112,6 @@ def _update_join_dataset(
     # Get existing dz json join dataset (get tilesize etc from this)
     log.debug('GET (dz json): {}'.format(dz_json_join_url))
     dz_json_join = http.get(session, dz_json_join_url)
-    dz_json_join_id = join_response['dataset']['id']
 
     # create new dz json based on existing
     for_create = {
@@ -142,6 +142,7 @@ def check_can_update(ims_type, ims):
     features = {
         "file": ["source", "upload"],
         "url": ["source", "transfer", "url"],
+        "azure_storage_container": ["source", "transfer", "url"],
     }
     try:
         get_from_dict(ims, features[ims_type])
@@ -171,6 +172,10 @@ def update(log, session, args):
         _update_to_url_imageset(session, configuration, ims_url)
     elif ims_type == "file":
         _update_file_imageset(log, session, args, configuration)
+    elif ims_type == "azure_storage_container":
+        configuration["url_template"] = azure_blobs.generate_signed_url(
+            configuration["container_name"])
+        _update_to_url_imageset(session, configuration, ims_url)
     collection_id = configuration['collection_id']
     dataset_id = configuration['dataset_id']
     dataset_column = configuration['dataset_column']
@@ -179,15 +184,17 @@ def update(log, session, args):
 
 
 def _update_to_url_imageset(session, configuration, ims_url):
-    dataset_column = configuration['dataset_column']
+    keys = ["dataset_column", "url_template"]
+    url_conf = {
+        key: configuration.get(key)
+        for key in keys if key in configuration
+    }
     ims = {
         "name": "Imageset created by CLI",
         "source": {
             "dataset_id": configuration['dataset_id'],
             "transfer": {
-                "url": {
-                    "dataset_column": dataset_column
-                }
+                "url": url_conf,
             }
         }
     }

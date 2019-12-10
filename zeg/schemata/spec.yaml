@@ -92,6 +92,15 @@ definitions:
       imageset_type:
         enum:
         - url
+      url_template:
+        type: string
+  azure_storage_container_properties:
+    properties:
+      imageset_type:
+        enum:
+        - azure_storage_container
+      container_name:
+        type: string
 anyOf:
 - oneOf:
   - $ref: '#/definitions/file_dataset'
@@ -112,6 +121,14 @@ anyOf:
       - dataset_id
       - dataset_column
       - imageset_type
+  - allOf:
+    - $ref: '#/definitions/azure_storage_container_properties'
+    - required:
+      - collection_id
+      - dataset_id
+      - dataset_column
+      - imageset_type
+      - container_name
 - oneOf:
   - properties:
       update_type:
