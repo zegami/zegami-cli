@@ -31,7 +31,7 @@ def generate_sas_with_sdk(connection_string, azure_container):
     sas_url = block_blob_service.generate_container_shared_access_signature(
         azure_container,
         BlobPermissions.READ,
-        datetime.utcnow() + timedelta(hours=1)
+        datetime.utcnow() + timedelta(days=1)
     )
     return 'https://{}.blob.core.windows.net/{}/{{}}?{}'.format(
         account_name, azure_container, sas_url

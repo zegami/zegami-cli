@@ -151,7 +151,7 @@ dataset_id: 5ad3a99b75f3b30001732f36
 # Name of the column in the dataset that contains the image url
 dataset_column: image_name
 # Url pattern - python format string where {} is the name of the image name (from data file)
-url_pattern: https://example.com/images/{}?accesscode=abc3e20423423497
+url_template: https://example.com/images/{}?accesscode=abc3e20423423497
 ```
 
 ### Azure storage imageset

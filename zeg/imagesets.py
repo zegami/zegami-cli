@@ -112,7 +112,6 @@ def _update_join_dataset(
     # Get existing dz json join dataset (get tilesize etc from this)
     log.debug('GET (dz json): {}'.format(dz_json_join_url))
     dz_json_join = http.get(session, dz_json_join_url)
-    dz_json_join_id = join_response['dataset']['id']
 
     # create new dz json based on existing
     for_create = {
@@ -174,7 +173,7 @@ def update(log, session, args):
     elif ims_type == "file":
         _update_file_imageset(log, session, args, configuration)
     elif ims_type == "azure_storage_container":
-        configuration["url_pattern"] = azure_blobs.generate_signed_url(
+        configuration["url_template"] = azure_blobs.generate_signed_url(
             configuration["container_name"])
         _update_to_url_imageset(session, configuration, ims_url)
     collection_id = configuration['collection_id']
@@ -185,7 +184,7 @@ def update(log, session, args):
 
 
 def _update_to_url_imageset(session, configuration, ims_url):
-    keys = ["dataset_column", "url_pattern"]
+    keys = ["dataset_column", "url_template"]
     url_conf = {
         key: configuration.get(key)
         for key in keys if key in configuration

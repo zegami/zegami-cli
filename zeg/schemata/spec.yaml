@@ -92,7 +92,7 @@ definitions:
       imageset_type:
         enum:
         - url
-      url_pattern:
+      url_template:
         type: string
   azure_storage_container_properties:
     properties:
