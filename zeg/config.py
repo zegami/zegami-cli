@@ -2,9 +2,22 @@
 
 """Collection commands."""
 import os
+import sys
 
 from jsonschema import validate
 import yaml
+
+
+def parse_args(args, log):
+    # check for config
+    if 'config' not in args:
+        log.error('Configuration file path missing')
+        sys.exit(1)
+    configuration = parse_config(args.config)
+    for attr in ['id', 'project', 'url']:
+        if attr in args:
+            configuration[attr] = getattr(args, attr)
+    return configuration
 
 
 def parse_config(path):

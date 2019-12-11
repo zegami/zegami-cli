@@ -4,7 +4,6 @@
 
 import concurrent.futures
 import os
-import sys
 import uuid
 
 from colorama import Fore, Style
@@ -37,13 +36,13 @@ def get(log, session, args):
     log.warn('Get imageset command coming soon.')
 
 
-def _update_file_imageset(log, session, args, configuration):
+def _update_file_imageset(log, session, configuration):
     create_url = "{}imagesets/{}/image_url".format(
-        http.get_api_url(args.url, args.project),
-        args.id)
+        http.get_api_url(configuration["url"], configuration["project"]),
+        configuration["id"])
     complete_url = "{}imagesets/{}/images".format(
-        http.get_api_url(args.url, args.project),
-        args.id)
+        http.get_api_url(configuration["url"], configuration["project"]),
+        configuration["id"])
     log.debug('POST: {}'.format(create_url))
     log.debug('POST: {}'.format(complete_url))
 
@@ -74,16 +73,17 @@ def _update_file_imageset(log, session, args, configuration):
 
 
 def _update_join_dataset(
-        log, args, dataset_id, dataset_column, session, collection_id):
+        log, configuration, dataset_id, dataset_column, session,
+        collection_id):
     dataset_create_url = "{}datasets/".format(
-        http.get_api_url(args.url, args.project)
+        http.get_api_url(configuration["url"], configuration["project"])
     )
     log.debug('POST: {}'.format(dataset_create_url))
 
     join_data = {
         'name': 'join dataset',
         'source': {
-            'imageset_id': args.id,
+            'imageset_id': configuration["id"],
             'dataset_id': dataset_id,
             'imageset_to_dataset': {
                 'dataset_column': dataset_column,
@@ -94,7 +94,7 @@ def _update_join_dataset(
     # create the join dataset
     join_response = http.post_json(session, dataset_create_url, join_data)
     collection_url = "{}collections/{}".format(
-        http.get_api_url(args.url, args.project),
+        http.get_api_url(configuration["url"], configuration["project"]),
         collection_id,
     )
     join_id = join_response['dataset']['id']
@@ -105,7 +105,7 @@ def _update_join_dataset(
     collection_response = http.get(session, collection_url)
     collection = collection_response['collection']
     dz_json_join_url = "{}datasets/{}".format(
-        http.get_api_url(args.url, args.project),
+        http.get_api_url(configuration["url"], configuration["project"]),
         collection["dz_json_dataset_id"]
     )
 
@@ -153,17 +153,17 @@ def check_can_update(ims_type, ims):
 
 
 def update(log, session, args):
+    configuration = config.parse_args(args)
+    update_from_dict(log, session, configuration)
+
+
+def update_from_dict(log, session, configuration):
     """Update an image set."""
     # check for config
-    if 'config' not in args:
-        log.error('Configuration file path missing')
-        sys.exit(1)
-
-    configuration = config.parse_config(args.config)
     ims_type = configuration["imageset_type"]
-    ims_id = args.id
+    ims_id = configuration["id"]
     ims_url = "{}imagesets/{}".format(
-        http.get_api_url(args.url, args.project),
+        http.get_api_url(configuration["url"], configuration["project"]),
         ims_id,
     )
     ims = http.get(session, ims_url)["imageset"]
@@ -171,7 +171,7 @@ def update(log, session, args):
     if ims_type == "url":
         _update_to_url_imageset(session, configuration, ims_url)
     elif ims_type == "file":
-        _update_file_imageset(log, session, args, configuration)
+        _update_file_imageset(log, session, configuration)
     elif ims_type == "azure_storage_container":
         configuration["url_template"] = azure_blobs.generate_signed_url(
             configuration["container_name"])
@@ -180,7 +180,7 @@ def update(log, session, args):
     dataset_id = configuration['dataset_id']
     dataset_column = configuration['dataset_column']
     _update_join_dataset(
-        log, args, dataset_id, dataset_column, session, collection_id)
+        log, configuration, dataset_id, dataset_column, session, collection_id)
 
 
 def _update_to_url_imageset(session, configuration, ims_url):

@@ -7,6 +7,8 @@ from colorama import Fore, Style
 
 from . import (
     config,
+    datasets,
+    imagesets,
     http,
 )
 
@@ -20,6 +22,36 @@ def get(log, session, args):
     log.debug('GET: {}'.format(url))
     response_json = http.get(session, url)
     log.print_json(response_json, "collection", "get", shorten=False)
+
+
+def create(log, session, args):
+    """Get a collection."""
+    url = "{}collections/".format(
+        http.get_api_url(args.url, args.project),)
+    log.debug('POST: {}'.format(url))
+    configuration = config.parse_args(args, log)
+    if "name" not in configuration:
+        log.error('Collection name missing from config file')
+        sys.exit(1)
+    coll = {
+        "name": configuration["name"],
+    }
+    for key in ["description"]:
+        if key in configuration:
+            coll[key] = configuration[key]
+    response_json = http.post_json(session, url, coll)
+    log.print_json(response_json, "collection", "post", shorten=False)
+    coll = response_json["collection"]
+    dataset_config = dict(
+        configuration, id=coll["upload_dataset_id"]
+    )
+    datasets.update_from_dict(log, session, dataset_config)
+    imageset_config = dict(
+        configuration, id=coll["imageset_id"]
+    )
+    imageset_config["dataset_id"] = coll["dataset_id"]
+    imageset_config["collection_id"] = coll["id"]
+    imagesets.update_from_dict(log, session, imageset_config)
 
 
 def update(log, session, args):

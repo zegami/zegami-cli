@@ -3,6 +3,10 @@ A Command Line Interface for [Zegami](https://www.zegami.com).
 
 Zegami is a visual data exploration tool that makes the analysis of large collections of image rich information quick and simple.
 
+The Zegami cli relies on a combination of yaml files and arguments.
+
+The first step is to create a collection
+
 # Installation
 ```
 pip3 install zegami-cli[sql]
