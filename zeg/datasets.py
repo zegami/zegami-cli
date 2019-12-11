@@ -1,4 +1,4 @@
-# Copyright 2018 Zegami Ltd
+# Copyright 2018 Zegami Ltd.
 
 """Collection commands."""
 
@@ -37,23 +37,20 @@ def get(log, session, args):
 
 
 def update(log, session, args):
+    configuration = config.parse_args(args, log)
+    update_from_dict(log, session, configuration)
+
+
+def update_from_dict(log, session, configuration):
     """Update a data set."""
     url_url = "{}imagesets/{}/image_url".format(
-        http.get_api_url(args.url, args.project),
-        args.id)
+        http.get_api_url(configuration['url'], configuration['project']),
+        configuration['id'])
     replace_url = "{}datasets/{}/".format(
-        http.get_api_url(args.url, args.project),
-        args.id)
+        http.get_api_url(configuration['url'], configuration['project']),
+        configuration['id'])
 
     log.debug('POST: {}'.format(url_url))
-
-    # check for config
-    if 'config' not in args:
-        log.error('Configuration file path missing')
-        sys.exit(1)
-
-    configuration = config.parse_config(args.config)
-
     # get update config
     if 'file_config' in configuration:
         (

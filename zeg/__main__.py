@@ -55,6 +55,12 @@ def main():
                 'imageset': imagesets.delete,
             }
         },
+        'create': {
+            'help': 'Create a resource',
+            'resources': {
+                'collections': collections.create,
+            }
+        },
         'get': {
             'help': 'Get a resource',
             'resources': {
@@ -93,12 +99,13 @@ def main():
             choices=option_mapper[action]['resources'].keys(),
             help='The name of the resource type.'
         )
-        action_parser.add_argument(
-            'id',
-            default=None,
-            nargs="?",
-            help='Resource identifier.',
-        )
+        if action != "create":
+            action_parser.add_argument(
+                'id',
+                default=None,
+                nargs="?",
+                help='Resource identifier.',
+            )
         action_parser.add_argument(
             '-c',
             '--config',
