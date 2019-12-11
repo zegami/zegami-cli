@@ -7,3 +7,4 @@ requests==2.22.0
 tqdm==4.20.0
 yamllint==1.10.0
 jsonschema==3.2.0
+azure==4.0.0

@@ -15,7 +15,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='zegami-cli',
-    version='0.16.0',
+    version='1.1.0',
     description='Command Line Interface for Zegami',
     long_description=long_description,
     url='https://github.com/zegami/zegami-cli',
@@ -39,6 +39,7 @@ setup(
         'PyYaml==5.1.1',
         'requests<3.0,>=2.15.0',
         'tqdm==4.20.0',
+        'azure==4.0.0',
     ],
     extras_require={
         'sql': [
