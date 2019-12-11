@@ -28,6 +28,79 @@ If the `collection id` is excluded then all collections will be listed.
 zeg get collections [collection id] --project [Project Id] --token [API token]
 ```
 
+## Create a collection
+Create a collection using a combined dataset and imageset config.
+```
+zeg create collections --project [Project Id] --token [API token] --url [Server url] --config [path to configuration yaml]
+```
+The following config properties are supported for file based imageset and datasets.
+
+```
+# The name of the collection
+name: file based
+description: an example collection with a file based imageset and dataset
+# The type of data set. For now this needs to be set to 'file'
+dataset_type: file
+# Config for the file data set type
+imageset_type: file
+# Config for the file image set type
+file_config:
+# Path to the dataset file
+    path:
+# A collection of paths. Paths can be to both images and directories
+    paths:
+        - an_image.jpg
+        - a/directory/path
+# Name of the column in the dataset that contains the image name
+dataset_column: image_name
+```
+
+If you are creating a url based imageset with a data file use these properties.
+
+The dataset_column property is used to set the column where the url is stored. You will need to include the full image url e.g. https://zegami.com/wp-content/uploads/2018/01/weatherall.svg
+
+```
+# The name of the collection
+name: url based
+# The description of the collection
+description: an example collection with a file based dataset where images are to be downloaded from urls
+# The type of image set. for now this needs to be set to 'url'
+imageset_type: url
+# Name of the column in the dataset that contains the image url
+dataset_column: image_name
+# Url pattern - python format string where {} is the name of the image name (from data file)
+url_template: https://example.com/images/{}?accesscode=abc3e20423423497
+dataset_type: file
+# Config for the file data set type
+file_config:
+# Path to the dataset file
+    path:
+```
+
+If you are creating an imageset on Azure from a private azure bucket with a local file do as follows:
+
+```
+# The name of the collection
+name: azure bucket based
+# The description of the collection
+description: an example collection with a file based dataset where images are to be downloaded from an azure bucket
+dataset_type: file
+# Config for the file data set type
+file_config:
+# Path to the dataset file
+    path:
+# The type of image set. for now this needs to be set to 'url'
+imageset_type: azure_storage_container
+# Name of the container
+container_name: my_azure_blobs
+# Name of the column in the dataset that contains the image url
+dataset_column: image_name
+
+# Note that the storage account connection string should also be made available via environment variable AZURE_STORAGE_CONNECTION_STRING
+```
+
+If you are using SQL data see below for config
+
 ## Update a collection
 Update a collection - *coming soon*.
 
@@ -60,8 +133,11 @@ Get a data set
 zeg get dataset [dataset id] --project [Project Id] --token [API token]
 ```
 
+
 ## Update a data set
 Update an existing data set with new data.
+
+Note that when using against a collection the dataset id used should be the upload_dataset_id. This is different from the below imageset update which requires the dataset identifier known as dataset_id from the collection.
 ```
 zeg update dataset [dataset id] --project [Project Id] --config [path to configuration yaml] --token [API token]
 ```
@@ -135,7 +211,7 @@ file_config:
         - a/directory/path
 # Unique identifier of the collection
 collection_id: 5ad3a99b75f3b30001732f36
-# Unique identifier of the collection data set
+# Unique identifier of the collection data set (get this from dataset_id)
 dataset_id: 5ad3a99b75f3b30001732f36
 # Name of the column in the dataset that contains the image name
 dataset_column: image_name
