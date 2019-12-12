@@ -112,8 +112,16 @@ definitions:
 anyOf:
 # dataset only
 - oneOf:
-  - $ref: '#/definitions/file_dataset'
-  - $ref: '#/definitions/sql_dataset'
+  - allOf:
+    - $ref: '#/definitions/file_dataset'
+    - required:
+      - dataset_type
+      - file_config
+  - allOf:
+    - $ref: '#/definitions/sql_dataset'
+    - required:
+      - dataset_type
+      - sql_config
 # imageset only
 - oneOf:
   - allOf:
@@ -143,8 +151,16 @@ anyOf:
 - allOf:
   - $ref: '#/definitions/collection'
   - oneOf:
-    - $ref: '#/definitions/file_dataset'
-    - $ref: '#/definitions/sql_dataset'
+    - allOf:
+      - $ref: '#/definitions/file_dataset'
+      - required:
+        - dataset_type
+        - file_config
+    - allOf:
+      - $ref: '#/definitions/sql_dataset'
+      - required:
+        - dataset_type
+        - sql_config
   - oneOf:
     - allOf:
       - $ref: '#/definitions/file_imageset_properties'
