@@ -47,7 +47,7 @@ imageset_type: file
 file_config:
 # Path to the dataset file
     path:
-# A collection of paths. Paths can be to both images and directories
+# A collection of paths to image files. Paths can be to both images and directories
     paths:
         - an_image.jpg
         - a/directory/path
