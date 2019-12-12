@@ -153,7 +153,7 @@ def check_can_update(ims_type, ims):
 
 
 def update(log, session, args):
-    configuration = config.parse_args(args)
+    configuration = config.parse_args(args, log)
     update_from_dict(log, session, configuration)
 
 
