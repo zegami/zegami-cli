@@ -113,3 +113,9 @@ def put_json(session, url, python_obj):
     """Put json content and decode json response."""
     with session.put(url, json=python_obj) as response:
         return handle_response(response)
+
+
+def put(session, url, data):
+    """Put data and decode json response."""
+    with session.put(url, data=data) as response:
+        return handle_response(response)
