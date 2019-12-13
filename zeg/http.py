@@ -113,3 +113,10 @@ def put_json(session, url, python_obj):
     """Put json content and decode json response."""
     with session.put(url, json=python_obj) as response:
         return handle_response(response)
+
+
+def put(session, url, data, content_type):
+    """Put data and decode json response."""
+    headers = {'Content-Type': content_type}
+    with session.put(url, data=data, headers=headers) as response:
+        return handle_response(response)

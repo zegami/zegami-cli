@@ -86,7 +86,9 @@ def update_from_dict(log, session, configuration):
         if url.startswith("/"):
             url = 'https://storage.googleapis.com{}'.format(url)
         log.debug('PUT (file content): {}'.format(url))
-        http.put_file(session, url, f, file_mime)
+        data = f.read()
+        http.put(session, url, data, file_mime)
+
         # confirm
         log.debug('GET (dataset): {}'.format(replace_url))
         current = http.get(session, replace_url)["dataset"]
