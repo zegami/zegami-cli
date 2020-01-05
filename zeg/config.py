@@ -30,7 +30,7 @@ def parse_config(path):
 def load_config(path):
     """Load yaml collection configuration."""
     with open(path, 'r') as stream:
-        return yaml.load(stream)
+        return yaml.load(stream, Loader=yaml.SafeLoader)
 
 
 def validate_config(configuration):
@@ -40,6 +40,6 @@ def validate_config(configuration):
         'spec.yaml'
     )
     with open(schema_path, 'r') as stream:
-        schema = yaml.load(stream)
+        schema = yaml.load(stream, Loader=yaml.SafeLoader)
 
     validate(configuration, schema)
