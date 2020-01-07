@@ -15,7 +15,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='zegami-cli',
-    version='1.1.1',
+    version='1.1.2',
     description='Command Line Interface for Zegami',
     long_description=long_description,
     url='https://github.com/zegami/zegami-cli',
@@ -30,6 +30,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
     packages=['zeg', 'zeg.tests'],
     install_requires=[
