@@ -97,13 +97,15 @@ sql_config:
 
 ### PostgreSQL
 Pre-requisites :
-	1. Make sure Zegami CLI latest is installed 
+
+1. Make sure Zegami CLI latest is installed 
 ```
 pip install zegami-cli[sql] --upgrade --no-cache-dir
 ```
 _Note: --no-cache-dir avoids some errors upon install_
 
-	2. Install pre-requirements for PostgreSQL connection
+2. Install pre-requirements for PostgreSQL connection
+
 Psycopg2 - https://pypi.org/project/psycopg2/ , http://initd.org/psycopg/
 ```
 sudo apt-get install python-psycopg2
@@ -129,7 +131,8 @@ sql_config:
 ```
 _Note: Connections strings must have indentation by "connection" and "query"_
 
-If you have already created a collection we can run the update command as above e.g. zeg update dataset upload_dataset_id --project projectID --config root/psqlconstring.yaml 
+If you have already created a collection we can run the update command as above 
+e.g. zeg update dataset upload_dataset_id --project projectID --config root/psqlconstring.yaml 
 
 If successful the following message will appear: 
 ```
