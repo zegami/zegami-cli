@@ -18,6 +18,7 @@ setup(
     version='1.1.2',
     description='Command Line Interface for Zegami',
     long_description=long_description,
+    long_description_content_type="text/markdown",
     url='https://github.com/zegami/zegami-cli',
     author='Zegami',
     author_email='help@zegami.com',
