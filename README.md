@@ -175,6 +175,69 @@ sql_config:
     query:
 ```
 
+### PostgreSQL
+Pre-requisites :
+
+1. Make sure Zegami CLI latest is installed 
+```
+pip install zegami-cli[sql] --upgrade --no-cache-dir
+```
+_Note: --no-cache-dir avoids some errors upon install_
+
+2. Install pre-requirements for PostgreSQL connection
+
+Psycopg2 - https://pypi.org/project/psycopg2/ , http://initd.org/psycopg/
+```
+sudo apt-get install python-psycopg2
+```
+
+libpq-dev - https://pypi.org/project/libpq-dev/ , https://github.com/ncbi/python-libpq-dev
+```
+sudo apt-get install libpq-dev
+```
+
+Once these are installed you will need to create a YAML file with the correct connection strings.
+
+*Connection String Example:*
+```
+# The type of data set. For now this needs to be set to 'file'
+dataset_type: sql
+# Config for the sql data set type
+sql_config: 
+# The connection string.
+    connection: "postgresql://postgres:myPassword@localhost:5432/postgres?sslmode=disable" 
+# SQL query
+    query: select * from XYZ
+```
+_Note: Connections strings must have indentation by "connection" and "query"_
+
+If you have already created a collection we can run the update command as above 
+e.g. zeg update dataset upload_dataset_id --project projectID --config root/psqlconstring.yaml 
+
+If successful the following message will appear: 
+```
+=========================================
+update dataset with result:
+-----------------------------------------
+id: datasetID
+name: Schema dataset for postgresql test
+source:
+  blob_id: blobID
+  dataset_id: datasetID
+  upload:
+    name: zeg-datasetiop9cbtn.csv
+
+=========================================
+```
+
+Useful links:
+https://www.npgsql.org/doc/connection-string-parameters.html
+https://www.connectionstrings.com/postgresql/ (Standard)
+https://docs.sqlalchemy.org/en/13/core/engines.html#postgresql (Specifies pre-reqs for connection)
+
+
+
+
 ## Delete a data set
 Delete a data set - *coming soon*.
 ```
