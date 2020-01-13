@@ -36,12 +36,12 @@ setup(
     packages=['zeg', 'zeg.tests'],
     install_requires=[
         'appdirs==1.4.3',
+        'azure-storage-blob==12.1.0',
         'colorama==0.3.9',
         'jsonschema==3.1.0',
         'PyYaml==5.2',
         'requests<3.0,>=2.15.0',
         'tqdm==4.20.0',
-        'azure==4.0.0',
     ],
     extras_require={
         'sql': [

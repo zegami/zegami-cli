@@ -6,8 +6,7 @@
 from datetime import datetime, timedelta
 import os
 
-from azure.storage.blob import BlockBlobService
-from azure.storage.blob import BlobPermissions
+from azure.storage.blob import generate_container_sas, ContainerSasPermissions
 
 
 def generate_signed_url(azure_container):
@@ -26,13 +25,15 @@ def build_creds(connection_string):
 
 def generate_sas_with_sdk(connection_string, azure_container):
     account_name, account_key = build_creds(connection_string)
-    block_blob_service = BlockBlobService(
-        account_name=account_name, account_key=account_key)
-    sas_url = block_blob_service.generate_container_shared_access_signature(
+
+    sas_token = generate_container_sas(
+        account_name,
         azure_container,
-        BlobPermissions.READ,
-        datetime.utcnow() + timedelta(days=1)
+        account_key=account_key,
+        permission=ContainerSasPermissions(read=True),
+        expiry=datetime.utcnow() + timedelta(days=1),
     )
+
     return 'https://{}.blob.core.windows.net/{}/{{}}?{}'.format(
-        account_name, azure_container, sas_url
+        account_name, azure_container, sas_token
     )
