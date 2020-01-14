@@ -186,7 +186,7 @@ pip install zegami-cli[sql] --upgrade --no-cache-dir
 ```
 _Note: --no-cache-dir avoids some errors upon install_
 
-Test the install with the login command, which promtps for username and password. This is then used to retrieve a long-lived API token which can be used for subsequent requests. The token is stored in a file in the currenet users data directory.
+Test the install with the login command, which prompts for username and password. This is then used to retrieve a long-lived API token which can be used for subsequent requests. The token is stored in a file in the current users data directory.
 Once retrieved all subsequent commands will use the stored token, unless it is specifically overridden with the `--token` option
 ```
 zeg login
