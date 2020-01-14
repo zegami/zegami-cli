@@ -184,22 +184,16 @@ pip install zegami-cli[sql] --upgrade --no-cache-dir
 ```
 _Note: --no-cache-dir avoids some errors upon install_
 
-The login command promtps for username and password which is then used to retrieve a long-lived API token which can be used for subsequent requests. The token is stored in a file in the currenet users data directory.
-Once retrieved all subsequest commands will use the stored token, unless it is specifically overridden wiht the `--token` option
-```
-zeg login
-```
-
 2. Install pre-requirements for PostgreSQL connection
 
 Psycopg2 - https://pypi.org/project/psycopg2/ , http://initd.org/psycopg/
 ```
-pip install python-psycopg2
+sudo apt-get install python-psycopg2
 ```
 
 libpq-dev - https://pypi.org/project/libpq-dev/ , https://github.com/ncbi/python-libpq-dev
 ```
-pip install libpq-dev
+sudo apt-get install libpq-dev
 ```
 
 Once these are installed you will need to create a YAML file with the correct connection strings.
