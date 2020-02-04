@@ -309,7 +309,7 @@ url_template: https://example.com/images/{}?accesscode=abc3e20423423497
 ### Azure storage imageset
 
 ```
-# The type of image set. for now this needs to be set to 'url'
+# The type of image set.
 imageset_type: azure_storage_container
 # Name of the container
 container_name: my_azure_blobs
