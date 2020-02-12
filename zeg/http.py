@@ -3,6 +3,7 @@
 """Tools for making http requests."""
 
 import requests.auth
+import urllib3.util.retry
 
 API_START_FORMAT = "{prefix}/api/v0/project/{project_id}/"
 
@@ -55,8 +56,25 @@ def get_api_url(url_prefix, project_id):
 
 
 def make_session(endpoint, token):
-    """Create a session object with optional auth handling."""
+    """
+    Create a session object with optional auth handling and a retry backoff.
+
+    See https://www.peterbe.com/plog/best-practice-with-retries-with-requests
+    """
     session = requests.Session()
+
+    # Retry post requests as well as the usual methods.
+    retry_methods = urllib3.util.retry.Retry.DEFAULT_METHOD_WHITELIST.union(
+        ('POST'))
+    retry = urllib3.util.retry.Retry(
+        total=10,
+        backoff_factor=0.5,
+        status_forcelist=[(502, 503, 504, 408)],
+        method_whitelist=retry_methods
+    )
+    adapter = requests.adapters.HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
     if token is not None:
         session.auth = TokenEndpointAuth(endpoint, token)
     return session
