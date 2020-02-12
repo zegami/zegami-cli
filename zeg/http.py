@@ -63,10 +63,14 @@ def make_session(endpoint, token):
     """
     session = requests.Session()
 
+    # Retry post requests as well as the usual methods.
+    retry_methods = urllib3.util.retry.Retry.DEFAULT_METHOD_WHITELIST.union(
+        ('POST'))
     retry = urllib3.util.retry.Retry(
         total=10,
         backoff_factor=0.5,
-        status_forcelist=[(502, 503, 504)],
+        status_forcelist=[(502, 503, 504, 408)],
+        method_whitelist=retry_methods
     )
     adapter = requests.adapters.HTTPAdapter(max_retries=retry)
     session.mount('http://', adapter)
