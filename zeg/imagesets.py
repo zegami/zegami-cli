@@ -173,6 +173,11 @@ def update_from_dict(log, session, configuration):
     elif ims_type == "file":
         _update_file_imageset(log, session, configuration)
     elif ims_type == "azure_storage_container":
+        if os.environ.get('AZURE_STORAGE_CONNECTION_STRING', None) is None:
+            log.error(
+                "The AZURE_STORAGE_CONNECTION_STRING environment variable" +
+                " must be set in order to create an azure storage collection"
+            )
         configuration["url_template"] = azure_blobs.generate_signed_url(
             configuration["container_name"])
         _update_to_url_imageset(session, configuration, ims_url)
