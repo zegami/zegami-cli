@@ -1,4 +1,4 @@
-# Copyright 2018 Zegami Ltd
+# Copyright 2018-2020 Zegami Ltd
 
 """A command line interface for managing Zegami."""
 
@@ -15,10 +15,10 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='zegami-cli',
-    version='1.1.5',
+    version='1.1.6',
     description='Command Line Interface for Zegami',
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type='text/markdown',
     url='https://github.com/zegami/zegami-cli',
     author='Zegami',
     author_email='help@zegami.com',
@@ -28,8 +28,6 @@ setup(
         'Topic :: Software Development :: User Interfaces',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
