@@ -37,21 +37,18 @@ setup(
     packages=['zeg', 'zeg.tests'],
     install_requires=[
         'appdirs==1.4.3',
-        'azure-storage-blob==12.1.0',
-        'colorama==0.3.9',
-        'jsonschema==3.1.0',
-        'PyYaml==5.2',
+        'azure-storage-blob==12.3.0',
+        'colorama==0.4.3',
+        'jsonschema==3.2.0',
+        'PyYaml==5.3.1',
         'requests<3.0,>=2.15.0',
-        'tqdm==4.20.0',
+        'tqdm==4.43.0',
     ],
     extras_require={
         'sql': [
-            'pyodbc==4.0.24',
-            'SQLAlchemy==1.2.6',
+            'pyodbc==4.0.30',
+            'SQLAlchemy==1.3.15',
         ],
-        'test': [
-            'flake8==3.5.0',
-        ]
     },
     entry_points={
         'console_scripts': [
