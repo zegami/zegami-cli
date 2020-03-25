@@ -16,9 +16,18 @@ class Fake204(object):
     content = b''
 
 
+class Fake201(object):
+    status_code = 201
+    content = b''
+
+
 class ErrorHandlingTestCase(unittest.TestCase):
     def test_handle_response_204(self):
         out = http.handle_response(Fake204)
+        self.assertIs(out, None)
+
+    def test_handle_response_201(self):
+        out = http.handle_response(Fake201)
         self.assertIs(out, None)
 
     def test_handle_empty_response_200(self):

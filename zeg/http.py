@@ -83,10 +83,11 @@ def make_session(endpoint, token):
 def handle_response(response):
     is_204 = response.status_code == 204
     is_200 = response.status_code == 200
+    is_201 = response.status_code == 201
 
     if response.status_code >= 300:
         raise ClientError(response)
-    elif (is_204 or is_200 and not response.content):
+    elif (is_204 or is_201 or is_200 and not response.content):
         return None
     try:
         json = response.json()
@@ -123,6 +124,8 @@ def delete(session, url):
 def put_file(session, url, filelike, mimetype):
     """Put binary content and decode json respose."""
     headers = {'Content-Type': mimetype}
+    if 'windows.net' in url:
+        headers['x-ms-blob-type'] = 'BlockBlob'
     with session.put(url, data=filelike, headers=headers) as response:
         return handle_response(response)
 
