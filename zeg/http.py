@@ -124,6 +124,9 @@ def delete(session, url):
 def put_file(session, url, filelike, mimetype):
     """Put binary content and decode json respose."""
     headers = {'Content-Type': mimetype}
+    # Uploading blobs to azure requires us to specify the kind of blob
+    # Block blobs are typical object storage
+    # https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction#blobs
     if 'windows.net' in url:
         headers['x-ms-blob-type'] = 'BlockBlob'
     with session.put(url, data=filelike, headers=headers) as response:
