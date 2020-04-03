@@ -83,10 +83,11 @@ def make_session(endpoint, token):
 def handle_response(response):
     is_204 = response.status_code == 204
     is_200 = response.status_code == 200
+    is_201 = response.status_code == 201
 
     if response.status_code >= 300:
         raise ClientError(response)
-    elif (is_204 or is_200 and not response.content):
+    elif (is_204 or is_201 or is_200 and not response.content):
         return None
     try:
         json = response.json()
@@ -144,6 +145,9 @@ def put(session, url, data, content_type):
 
 
 def format_azure(url):
+    # Uploading blobs to azure requires us to specify the kind of blob
+    # Block blobs are typical object storage
+    # https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction#blobs
     if 'windows.net' in url:
         return {'x-ms-blob-type': 'BlockBlob'}
     return {}
