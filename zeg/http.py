@@ -123,18 +123,27 @@ def delete(session, url):
 def put_file(session, url, filelike, mimetype):
     """Put binary content and decode json respose."""
     headers = {'Content-Type': mimetype}
+    headers.update(format_azure(url))
     with session.put(url, data=filelike, headers=headers) as response:
         return handle_response(response)
 
 
 def put_json(session, url, python_obj):
+    headers = format_azure(url)
     """Put json content and decode json response."""
-    with session.put(url, json=python_obj) as response:
+    with session.put(url, json=python_obj, headers=headers) as response:
         return handle_response(response)
 
 
 def put(session, url, data, content_type):
     """Put data and decode json response."""
     headers = {'Content-Type': content_type}
+    headers.update(format_azure(url))
     with session.put(url, data=data, headers=headers) as response:
         return handle_response(response)
+
+
+def format_azure(url):
+    if 'windows.net' in url:
+        return {'x-ms-blob-type': 'BlockBlob'}
+    return {}

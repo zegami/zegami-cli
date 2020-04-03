@@ -27,3 +27,10 @@ class ErrorHandlingTestCase(unittest.TestCase):
         resp.status_code = 200
         out = http.handle_response(resp)
         self.assertIs(out, None)
+
+    def test_provide_azure_headers(self):
+        url = 'https://fake.blob.core.windows.net/container/blob123'
+        headers = http.format_azure(url)
+        self.assertEqual(headers, {
+            'x-ms-blob-type': 'BlockBlob'
+        })
