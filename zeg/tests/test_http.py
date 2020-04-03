@@ -39,7 +39,7 @@ class ErrorHandlingTestCase(unittest.TestCase):
 
     def test_provide_azure_headers(self):
         url = 'https://fake.blob.core.windows.net/container/blob123'
-        headers = http.format_azure(url)
+        headers = http.get_platform_headers(url)
         self.assertEqual(headers, {
             'x-ms-blob-type': 'BlockBlob'
         })

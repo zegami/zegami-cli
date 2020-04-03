@@ -124,13 +124,13 @@ def delete(session, url):
 def put_file(session, url, filelike, mimetype):
     """Put binary content and decode json respose."""
     headers = {'Content-Type': mimetype}
-    headers.update(format_azure(url))
+    headers.update(get_platform_headers(url))
     with session.put(url, data=filelike, headers=headers) as response:
         return handle_response(response)
 
 
 def put_json(session, url, python_obj):
-    headers = format_azure(url)
+    headers = get_platform_headers(url)
     """Put json content and decode json response."""
     with session.put(url, json=python_obj, headers=headers) as response:
         return handle_response(response)
@@ -139,12 +139,12 @@ def put_json(session, url, python_obj):
 def put(session, url, data, content_type):
     """Put data and decode json response."""
     headers = {'Content-Type': content_type}
-    headers.update(format_azure(url))
+    headers.update(get_platform_headers(url))
     with session.put(url, data=data, headers=headers) as response:
         return handle_response(response)
 
 
-def format_azure(url):
+def get_platform_headers(url):
     # Uploading blobs to azure requires us to specify the kind of blob
     # Block blobs are typical object storage
     # https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction#blobs
