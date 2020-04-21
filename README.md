@@ -33,6 +33,13 @@ Create a collection using a combined dataset and imageset config.
 ```
 zeg create collections --project [Project Id] --token [API token] --url [Server url] --config [path to configuration yaml]
 ```
+
+In here, project id is a synonym for workspace id, and you'll be able to find it in the url when looking at a given collection workspace:
+
+https://zegami.com/mycollections/66xtfqsk
+
+In the case of this workspace, it's 66xtfqsk.
+
 The following config properties are supported for file based imageset and datasets.
 
 ```
@@ -114,6 +121,11 @@ zeg delete collections [collection id] --project [Project Id] --token [API token
 ```
 zeg publish collection [collection id] --project [Project Id] --config [path to configuration yaml] --token [API token]
 ```
+Similarly to the workspace id, the collection id can be found in the url pointing to a given collection. For instance:
+
+https://zegami.com/collections/public-5df0d8c40812cf0001e99945?pan=FILTERS_PANEL&view=grid&info=true
+
+This url is pointing to a collection with a collection id which is 5df0d8c40812cf0001e99945.
 
 The config `yaml` file is used to specify additional configuration for the collection publish.
 ```
@@ -132,6 +144,11 @@ Get a data set
 ```
 zeg get dataset [dataset id] --project [Project Id] --token [API token]
 ```
+The dataset id can be found by by running the following on the cli:
+
+zeg get collection <collection id> --project <project id>
+
+From here we will be able to see the upload_dataset_id which can be thought of as the data input funnel (whereas dataset_id is the data output pipe that the viewer pulls from).
 
 
 ## Update a data set
