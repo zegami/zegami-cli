@@ -55,10 +55,10 @@ class TestValidateConfig(unittest.TestCase):
         """
 
         configuration = self._get_configuration(config_data)
-       
+
         with self.assertRaises(SystemExit):
             config.validate_config(configuration, logger)
-        
+
         logger.error.assert_called_with(
             ANY,
             err="'file_config' is a required property",
@@ -151,7 +151,7 @@ class TestValidateConfig(unittest.TestCase):
             ANY,
             err="'file' is not one of ['sql']",
         )
-    
+
     def test_file_config_invalid_filetype(self):
         config_data = """
             dataset_type: file
@@ -344,7 +344,7 @@ class TestValidateConfig(unittest.TestCase):
             ANY,
             err="'path' is a required property",
         )
-    
+
     def test_image_config_invalid_paths(self):
         config_data = """
             imageset_type: file

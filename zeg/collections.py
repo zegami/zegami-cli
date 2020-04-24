@@ -29,6 +29,8 @@ def create(log, session, args):
     url = "{}collections/".format(
         http.get_api_url(args.url, args.project),)
     log.debug('POST: {}'.format(url))
+    
+    # parse config
     configuration = config.parse_args(args, log)
     if "name" not in configuration:
         log.error('Collection name missing from config file')
