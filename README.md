@@ -175,10 +175,10 @@ sql_config:
     query:
 ```
 
-### PostgreSQL - tested on Linux and windows, up to Python v3.7
+### PostgreSQL - tested on Linux and windows, up to Python v3.8
 Pre-requisites :
 
-1. Standard requirements - code editor, pip package manager, python 3.7.
+1. Standard requirements - code editor, pip package manager, python 3.8.
 
 2. Make sure Zegami CLI latest is installed 
 ```
@@ -265,7 +265,7 @@ Update an image set with new images.
 zeg update imageset [imageset id] --project [Project Id] --config [path to configuration yaml] --token [API token]
 ```
 
-The config `yaml` file is used to specify additional configuration for the image set update.
+The config `yaml` file is used to specify additional configuration for the image set update. Note that an imageset can only be changed before images are added to it.
 
 ### File imageset
 
