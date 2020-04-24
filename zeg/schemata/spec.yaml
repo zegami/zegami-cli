@@ -13,6 +13,7 @@ properties:
     properties:
       path:
         type: string
+        pattern: \.(tab|tsv|csv|xlsx)$
       directory:
         type: string
       paths:
