@@ -148,8 +148,7 @@ Dataset Ids can be found in the collection information, obtained by running:
 ```
 zeg get collection <collection id> --project <project id>
 ```
-From here we will be able to see the upload_dataset_id which can be thought of as the data input funnel (whereas dataset_id is the data output pipe that the viewer pulls from).
-
+From here `upload_dataset_id` can be obtained. This identifies the dataset that represents the data as it was uploaded. Whereas `dataset_id` identifies the processed dataset delivered to the viewer.
 
 ## Update a data set
 Update an existing data set with new data.
