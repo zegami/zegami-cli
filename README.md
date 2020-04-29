@@ -121,7 +121,7 @@ zeg delete collections [collection id] --project [Project Id] --token [API token
 ```
 zeg publish collection [collection id] --project [Project Id] --config [path to configuration yaml] --token [API token]
 ```
-Similarly to the workspace id, the collection id can be found in the url pointing to a given collection. For instance:
+Similarly to the workspace id, the collection id can be found in the url for a given collection. For instance:
 
 https://zegami.com/collections/public-5df0d8c40812cf0001e99945?pan=FILTERS_PANEL&view=grid&info=true
 
