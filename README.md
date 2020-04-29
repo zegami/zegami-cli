@@ -144,7 +144,7 @@ Get a data set
 ```
 zeg get dataset [dataset id] --project [Project Id] --token [API token]
 ```
-The dataset id can be found by by running the following on the cli:
+Dataset Ids can be found in the collection information, obtained by running:
 
 zeg get collection <collection id> --project <project id>
 
