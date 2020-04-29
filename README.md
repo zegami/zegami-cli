@@ -34,11 +34,11 @@ Create a collection using a combined dataset and imageset config.
 zeg create collections --project [Project Id] --token [API token] --url [Server url] --config [path to configuration yaml]
 ```
 
-In here, project id is a synonym for workspace id, and you'll be able to find it in the url when looking at a given collection workspace:
+Project id, or workspace id, can be found in the url of a collection or collection listing page. For example:
 
 https://zegami.com/mycollections/66xtfqsk
 
-In the case of this workspace, it's 66xtfqsk.
+In the case of this workspace, it's `66xtfqsk`.
 
 The following config properties are supported for file based imageset and datasets.
 
