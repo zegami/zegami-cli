@@ -5,6 +5,8 @@
 import unittest
 from unittest.mock import patch, mock_open, MagicMock, ANY
 
+from jsonschema import exceptions as jx
+
 from .. import (
     config,
     log,
@@ -32,7 +34,7 @@ class TestValidateConfig(unittest.TestCase):
 
         try:
             config.validate_config(configuration, logger)
-        except SystemExit:
+        except jx.ValidationError:
             self.fail('Failed validation')
 
     def test_file_upload_directory(self):
@@ -46,7 +48,7 @@ class TestValidateConfig(unittest.TestCase):
 
         try:
             config.validate_config(configuration, logger)
-        except SystemExit:
+        except jx.ValidationError:
             self.fail('Failed validation')
 
     def test_unknown_configuration(self):
@@ -56,7 +58,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -73,7 +75,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -91,7 +93,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -112,7 +114,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -129,7 +131,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -144,7 +146,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -161,7 +163,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -180,7 +182,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -200,7 +202,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -220,7 +222,7 @@ class TestValidateConfig(unittest.TestCase):
 
         try:
             config.validate_config(configuration, logger)
-        except SystemExit:
+        except jx.ValidationError:
             self.fail('Failed validation')
 
     def test_sql_missing_config(self):
@@ -230,7 +232,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -248,7 +250,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -265,7 +267,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -282,7 +284,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -306,7 +308,7 @@ class TestValidateConfig(unittest.TestCase):
 
         try:
             config.validate_config(configuration, logger)
-        except SystemExit:
+        except jx.ValidationError:
             self.fail('Failed validation')
 
     def test_image_config_file_config_missing(self):
@@ -316,7 +318,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -337,7 +339,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -358,7 +360,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -376,7 +378,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -396,7 +398,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -417,7 +419,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -438,7 +440,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -458,7 +460,7 @@ class TestValidateConfig(unittest.TestCase):
 
         try:
             config.validate_config(configuration, logger)
-        except SystemExit:
+        except jx.ValidationError:
             self.fail('Failed validation')
 
     def test_collection_update_unknown(self):
@@ -471,7 +473,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -486,7 +488,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -503,7 +505,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -520,7 +522,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -538,7 +540,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(
@@ -556,7 +558,7 @@ class TestValidateConfig(unittest.TestCase):
 
         configuration = self._get_configuration(config_data)
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(jx.ValidationError):
             config.validate_config(configuration, logger)
 
         logger.error.assert_called_with(

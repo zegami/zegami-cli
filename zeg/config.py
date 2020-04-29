@@ -1,4 +1,4 @@
-# Copyright 2018 Zegami Ltd
+# Copyright 2018-2020 Zegami Ltd
 
 """Collection commands."""
 import os
@@ -49,4 +49,4 @@ def validate_config(configuration, log):
             'Configuration validation error. {err}',
             err=ex.message
         )
-        sys.exit(1)
+        raise ex
