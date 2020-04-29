@@ -145,9 +145,9 @@ Get a data set
 zeg get dataset [dataset id] --project [Project Id] --token [API token]
 ```
 Dataset Ids can be found in the collection information, obtained by running:
-
+```
 zeg get collection <collection id> --project <project id>
-
+```
 From here we will be able to see the upload_dataset_id which can be thought of as the data input funnel (whereas dataset_id is the data output pipe that the viewer pulls from).
 
 
