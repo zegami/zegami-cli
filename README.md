@@ -25,13 +25,13 @@ zeg login
 Get the details of a collection.
 If the `collection id` is excluded then all collections will be listed.
 ```
-zeg get collections [collection id] --project [Project Id] --token [API token]
+zeg get collections [collection id] --project [Project Id]
 ```
 
 ## Create a collection
 Create a collection using a combined dataset and imageset config.
 ```
-zeg create collections --project [Project Id] --token [API token] --url [Server url] --config [path to configuration yaml]
+zeg create collections --project [Project Id] --config [path to configuration yaml]
 ```
 The following config properties are supported for file based imageset and datasets.
 
@@ -107,12 +107,12 @@ Update a collection - *coming soon*.
 ## Delete a collection
 Delete a collection
 ```
-zeg delete collections [collection id] --project [Project Id] --token [API token]
+zeg delete collections [collection id] --project [Project Id]
 ```
 
 ## Publish a collection
 ```
-zeg publish collection [collection id] --project [Project Id] --config [path to configuration yaml] --token [API token]
+zeg publish collection [collection id] --project [Project Id] --config [path to configuration yaml]
 ```
 
 The config `yaml` file is used to specify additional configuration for the collection publish.
@@ -130,7 +130,7 @@ publish_config:
 ## Get a data set
 Get a data set
 ```
-zeg get dataset [dataset id] --project [Project Id] --token [API token]
+zeg get dataset [dataset id] --project [Project Id]
 ```
 
 
@@ -139,7 +139,7 @@ Update an existing data set with new data.
 
 Note that when using against a collection the dataset id used should be the upload_dataset_id. This is different from the below imageset update which requires the dataset identifier known as dataset_id from the collection.
 ```
-zeg update dataset [dataset id] --project [Project Id] --config [path to configuration yaml] --token [API token]
+zeg update dataset [dataset id] --project [Project Id] --config [path to configuration yaml]
 ```
 
 The config `yaml` file is used to specify additional configuration for the data set update. There are *two* supported `dataset_type` supported.
@@ -250,19 +250,19 @@ https://docs.sqlalchemy.org/en/13/core/engines.html#postgresql (Specifies pre-re
 ## Delete a data set
 Delete a data set - *coming soon*.
 ```
-zeg delete dataset [dataset id] --project [Project Id] --token [API token]
+zeg delete dataset [dataset id] --project [Project Id]
 ```
 
 ## Get an image set
 Get an image set - *coming soon*.
 ```
-zeg get imageset [imageset id] --project [Project Id] --token [API token]
+zeg get imageset [imageset id] --project [Project Id]
 ```
 
 ## Update an image set
 Update an image set with new images.
 ```
-zeg update imageset [imageset id] --project [Project Id] --config [path to configuration yaml] --token [API token]
+zeg update imageset [imageset id] --project [Project Id] --config [path to configuration yaml]
 ```
 
 The config `yaml` file is used to specify additional configuration for the image set update. Note that an imageset can only be changed before images are added to it.
@@ -326,7 +326,7 @@ dataset_column: image_name
 ## Delete an image set
 Delete an image set - *coming soon*.
 ```
-zeg delete imageset [imageset id] --project [Project Id] --token [API token]
+zeg delete imageset [imageset id] --project [Project Id]
 ```
 
 
