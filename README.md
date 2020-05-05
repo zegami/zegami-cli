@@ -146,7 +146,7 @@ zeg get dataset [dataset id] --project [Project Id]
 ```
 Dataset Ids can be found in the collection information, obtained by running:
 ```
-zeg get collection <collection id> --project <project id>
+zeg get collections <collection id> --project <project id>
 ```
 From here `upload_dataset_id` can be obtained. This identifies the dataset that represents the data as it was uploaded. Whereas `dataset_id` identifies the processed dataset delivered to the viewer.
 
