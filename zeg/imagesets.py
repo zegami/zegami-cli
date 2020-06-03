@@ -36,13 +36,87 @@ def get(log, session, args):
     log.warn('Get imageset command coming soon.')
 
 
+def _get_chunk_upload_futures(
+    executor, paths, session, create_url, complete_url, log
+):
+    """Return executable tasks with image uploads in batches.
+
+    Instead of performing image uploads and updating the imageset
+    one at a time, we reduce load on the API server by uploading
+    many images and updating the api server in one go, consequently
+    making upload faster.
+    """
+    total_work = len(paths)
+    workloads = []
+    temp = []
+    workload_size = 5
+    i = 0
+    while i < total_work:
+        path = paths[i]
+        temp.append(path)
+        i += 1
+        if len(temp) == workload_size or i == total_work:
+            workloads.append(executor.submit(
+                _upload_image_chunked,
+                temp,
+                session,
+                create_url,
+                complete_url,
+                log,
+            ))
+            temp = []
+    log.debug('generated {} workloads for computation'.format(len(workloads)))
+    return workloads
+
+def _upload_image_chunked(paths, session, create_url, complete_url, log):
+    log.debug('processing chunked workload of {} items'.format(len(paths)))
+    results = []
+
+    for path in paths:
+        file_name = os.path.basename(path)
+        file_ext = os.path.splitext(path)[-1]
+        file_mime = MIMES.get(file_ext, MIMES['.jpg'])
+
+        with open(path, 'rb') as f:
+            info = {
+                "image": {
+                    "blob_id": str(uuid.uuid4()),
+                    "name": file_name,
+                    "size": os.path.getsize(path),
+                    "mimetype": file_mime
+                }
+            }
+            try:
+                # First create file object
+                create = http.post_json(session, create_url, info)
+                # Post file to storage location
+                url = create["url"]
+                # don't want this to be here, too specific
+                # if url.startswith("/"):
+                #     url = 'https://storage.googleapis.com{}'.format(url)
+                http.put_file(session, url, f, file_mime)
+                results.append(info)
+            except Exception as ex:
+                log.error("File upload failed: {}".format(ex))
+    
+    # send the chunk of images as a bulk operation
+    http.post_json(session, complete_url, results)
+
+
 def _update_file_imageset(log, session, configuration):
     create_url = "{}imagesets/{}/image_url".format(
         http.get_api_url(configuration["url"], configuration["project"]),
         configuration["id"])
-    complete_url = "{}imagesets/{}/images".format(
+    # complete_url = "{}imagesets/{}/images".format(
+    #     http.get_api_url(configuration["url"], configuration["project"]),
+    #     configuration["id"])
+    complete_url = "{}imagesets/{}/images/bulk".format(
+    http.get_api_url(configuration["url"], configuration["project"]),
+    configuration["id"])
+    extend_url = "{}imagesets/{}/extend".format(
         http.get_api_url(configuration["url"], configuration["project"]),
         configuration["id"])
+    log.debug('POST: {}'.format(extend_url))
     log.debug('POST: {}'.format(create_url))
     log.debug('POST: {}'.format(complete_url))
 
@@ -50,18 +124,20 @@ def _update_file_imageset(log, session, configuration):
     file_config = configuration['file_config']
     # check colleciton id, dataset and join column name
 
+    # first extend the imageset by the number of items we have to upload
+    paths = _resolve_paths(file_config['paths'])
+    http.post_json(session, extend_url, {'delta': len(paths)})
+
     with concurrent.futures.ThreadPoolExecutor(http.CONCURRENCY) as executor:
-        paths = _resolve_paths(file_config['paths'])
-        futures = [
-            executor.submit(
-                _upload_image,
-                path,
-                session,
-                create_url,
-                complete_url,
-                log,
-            ) for path in paths
-        ]
+        # get bundles of work that will upload images rather than a future per image
+        futures = _get_chunk_upload_futures(
+            executor,
+            paths,
+            session,
+            create_url,
+            complete_url,
+            log
+        )
         kwargs = {
             'total': len(futures),
             'unit': 'image',
