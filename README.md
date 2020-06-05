@@ -53,7 +53,7 @@ imageset_type: file
 # Config for the file image set type
 file_config:
 # Path to the dataset file
-    path:
+    path: path/to/file/mydata.csv
 # A collection of paths to image files. Paths can be to both images and directories
     paths:
         - an_image.jpg
@@ -81,7 +81,7 @@ dataset_type: file
 # Config for the file data set type
 file_config:
 # Path to the dataset file
-    path:
+    path: path/to/file/mydata.csv
 ```
 
 If you are creating an imageset on Azure from a private azure bucket with a local file do as follows:
@@ -95,7 +95,7 @@ dataset_type: file
 # Config for the file data set type
 file_config:
 # Path to the dataset file
-    path:
+    path: path/to/file/mydata.csv
 # The type of image set. for now this needs to be set to 'url'
 imageset_type: azure_storage_container
 # Name of the container
@@ -168,7 +168,7 @@ dataset_type: file
 # Config for the file data set type
 file_config:
 # Path to the dataset file
-    path:
+    path: path/to/file/mydata.csv
 # Or path to a directory that contains data files.
 # Only the latest file that matches the accepted extensions (.csv, .tsv, .xlsx)
 # will be uploaded. This is useful for creating collections based on
@@ -196,7 +196,7 @@ Pre-requisites :
 
 1. Standard requirements - code editor, pip package manager, python 3.8.
 
-2. Make sure Zegami CLI latest is installed 
+2. Make sure Zegami CLI latest is installed
 ```
 pip install zegami-cli[sql] --upgrade --no-cache-dir
 ```
@@ -228,18 +228,18 @@ Once these are installed you will need to create a YAML file with the correct co
 # The type of data set. For now this needs to be set to 'file'
 dataset_type: sql
 # Config for the sql data set type
-sql_config: 
+sql_config:
 # The connection string.
-    connection: "postgresql://postgres:myPassword@localhost:5432/postgres?sslmode=disable" 
+    connection: "postgresql://postgres:myPassword@localhost:5432/postgres?sslmode=disable"
 # SQL query
     query: select * from XYZ
 ```
 _Note: Connections strings must have indentation by "connection" and "query"_
 
-If you have already created a collection we can run the update command as above 
-e.g. zeg update dataset upload_dataset_id --project projectID --config root/psqlconstring.yaml 
+If you have already created a collection we can run the update command as above
+e.g. zeg update dataset upload_dataset_id --project projectID --config root/psqlconstring.yaml
 
-If successful the following message will appear: 
+If successful the following message will appear:
 ```
 =========================================
 update dataset with result:
