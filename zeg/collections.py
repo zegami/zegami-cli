@@ -2,6 +2,7 @@
 
 """Collection commands."""
 import sys
+from datetime import datetime
 
 from colorama import Fore, Style
 
@@ -26,6 +27,7 @@ def get(log, session, args):
 
 def create(log, session, args):
     """Get a collection."""
+    time_start = datetime.now()
     url = "{}collections/".format(
         http.get_api_url(args.url, args.project),)
     log.debug('POST: {}'.format(url))
@@ -54,6 +56,8 @@ def create(log, session, args):
     imageset_config["dataset_id"] = coll["dataset_id"]
     imageset_config["collection_id"] = coll["id"]
     imagesets.update_from_dict(log, session, imageset_config)
+    delta_time = datetime.now() - time_start
+    log.debug("Collection uploaded in {}".format(delta_time))
 
 
 def update(log, session, args):
