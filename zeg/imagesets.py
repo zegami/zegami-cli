@@ -123,7 +123,7 @@ def _upload_image_chunked(paths, session, create_url, complete_url, log, workloa
     try:
         url = complete_url + "?start={}".format(workload_info["start"])
         log.debug("POSTING TO: {}".format(url))
-        http.post_json(session, url, results)
+        http.post_json(session, url, {'images': results})
     except Exception as ex:
         log.error("Failed to complete workload: {}".format(ex))
 
