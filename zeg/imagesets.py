@@ -3,9 +3,7 @@
 """Collection commands."""
 
 import concurrent.futures
-import json
 import os
-import math
 import uuid
 
 from colorama import Fore, Style
@@ -72,16 +70,16 @@ def _get_chunk_upload_futures(
                 workload_info
             ))
             temp = []
-        
+
     return workloads
 
 
-def _upload_image_chunked(paths, session, create_url, complete_url, log, workload_info):
+def _upload_image_chunked(paths, session, create_url, complete_url, log, workload_info):  # noqa: E501
     results = []
 
     # get all signed urls at once
     try:
-        id_set = { "ids": [str(uuid.uuid4()) for path in paths] }
+        id_set = {"ids": [str(uuid.uuid4()) for path in paths]}
         signed_urls = http.post_json(session, create_url, id_set)
     except Exception as ex:
         log.error("Could not get signed urls for image uploads: {}".format(ex))
@@ -114,7 +112,7 @@ def _upload_image_chunked(paths, session, create_url, complete_url, log, workloa
                 if url.startswith("/"):
                     url = 'https://storage.googleapis.com{}'.format(url)
                 http.put_file(session, url, f, file_mime)
-                # pop the info into our results array and upload only once later
+                # pop the info into a temp array, upload only once later
                 results.append(info["image"])
             except Exception as ex:
                 log.error("File upload failed: {}".format(ex))
@@ -129,19 +127,12 @@ def _upload_image_chunked(paths, session, create_url, complete_url, log, workloa
 
 
 def _update_file_imageset(log, session, configuration):
-    # create_url = "{}imagesets/{}/image_url".format(
-    #     http.get_api_url(configuration["url"], configuration["project"]),
-    #     configuration["id"])
     bulk_create_url = "{}signed_blob_url".format(
         http.get_api_url(configuration["url"], configuration["project"]))
-    # a bit of a hack for now
     bulk_create_url = bulk_create_url.replace('v0', 'v1')
-    # complete_url = "{}imagesets/{}/images".format(
-    #     http.get_api_url(configuration["url"], configuration["project"]),
-    #     configuration["id"])
     complete_url = "{}imagesets/{}/images_bulk".format(
-    http.get_api_url(configuration["url"], configuration["project"]),
-    configuration["id"])
+        http.get_api_url(configuration["url"], configuration["project"]),
+        configuration["id"])
     extend_url = "{}imagesets/{}/extend".format(
         http.get_api_url(configuration["url"], configuration["project"]),
         configuration["id"])
@@ -157,18 +148,18 @@ def _update_file_imageset(log, session, configuration):
     # first extend the imageset by the number of items we have to upload
     paths = _resolve_paths(file_config['paths'])
     http.post_json(session, extend_url, {'delta': len(paths)})
-    
+
     workload_size = optimal_workload_size(len(paths))
 
     # When chunking work, futures could contain as much as 100 images at once.
-    # If the number of images does not divide cleanly into 10 or 100 (optimal sizes)
+    # If the number of images does not divide cleanly into 10 or 100 (optimal)
     # The total may be larger than reality and the image/s speed less accurate.
     if workload_size != 1:
-        log.warn("When uploading larger imagesets, the progress bar may have reduced accuracy.")
+        log.warn("The progress bar may have reduced accuracy when uploading larger imagesets.")  # noqa: E501
 
 # http.CONCURRENCY
     with concurrent.futures.ThreadPoolExecutor(1) as executor:
-        # get bundles of work that will upload images rather than a future per image
+        # get bundles that will upload images rather than a future per image
         futures = _get_chunk_upload_futures(
             executor,
             paths,
