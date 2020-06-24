@@ -65,7 +65,7 @@ def make_session(endpoint, token):
 
     # Retry post requests as well as the usual methods.
     retry_methods = urllib3.util.retry.Retry.DEFAULT_METHOD_WHITELIST.union(
-        ('POST'))
+        ('POST', 'PUT'))
     retry = urllib3.util.retry.Retry(
         total=10,
         backoff_factor=0.5,

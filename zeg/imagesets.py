@@ -36,40 +36,158 @@ def get(log, session, args):
     log.warn('Get imageset command coming soon.')
 
 
+def _get_chunk_upload_futures(
+    executor, paths, session, create_url, complete_url, log, workload_size
+):
+    """Return executable tasks with image uploads in batches.
+
+    Instead of performing image uploads and updating the imageset
+    one at a time, we reduce load on the API server by uploading
+    many images and updating the api server in one go, consequently
+    making upload faster.
+    """
+    total_work = len(paths)
+    workloads = []
+    temp = []
+
+    i = 0
+    while i < total_work:
+        path = paths[i]
+        temp.append(path)
+        i += 1
+        if len(temp) == workload_size or i == total_work:
+            workload_info = {
+                "start": i - len(temp),
+                "count": len(temp),
+            }
+            workloads.append(executor.submit(
+                _upload_image_chunked,
+                temp,
+                session,
+                create_url,
+                complete_url,
+                log,
+                workload_info
+            ))
+            temp = []
+
+    return workloads
+
+
+def _upload_image_chunked(paths, session, create_url, complete_url, log, workload_info):  # noqa: E501
+    results = []
+
+    # get all signed urls at once
+    try:
+        id_set = {"ids": [str(uuid.uuid4()) for path in paths]}
+        signed_urls = http.post_json(session, create_url, id_set)
+    except Exception as ex:
+        log.error("Could not get signed urls for image uploads: {}".format(ex))
+        return
+
+    index = 0
+    for fpath in paths:
+        try:
+            file_name = os.path.basename(fpath)
+            file_ext = os.path.splitext(fpath)[-1]
+            file_mime = MIMES.get(file_ext, MIMES['.jpg'])
+        except Exception as ex:
+            log.error("issue with file info: {}".format(ex))
+
+        with open(fpath, 'rb') as f:
+            blob_id = id_set["ids"][index]
+            info = {
+                "image": {
+                    "blob_id": blob_id,
+                    "name": file_name,
+                    "size": os.path.getsize(fpath),
+                    "mimetype": file_mime
+                }
+            }
+            index = index + 1
+            try:
+                # Post file to storage location
+                url = signed_urls[blob_id]
+                # google based signed urls come as a relative path
+                if url.startswith("/"):
+                    url = 'https://storage.googleapis.com{}'.format(url)
+                http.put_file(session, url, f, file_mime)
+                # pop the info into a temp array, upload only once later
+                results.append(info["image"])
+            except Exception as ex:
+                log.error("File upload failed: {}".format(ex))
+
+    # send the chunk of images as a bulk operation rather than per image
+    try:
+        url = complete_url + "?start={}".format(workload_info["start"])
+        log.debug("POSTING TO: {}".format(url))
+        http.post_json(session, url, {'images': results})
+    except Exception as ex:
+        log.error("Failed to complete workload: {}".format(ex))
+
+
 def _update_file_imageset(log, session, configuration):
-    create_url = "{}imagesets/{}/image_url".format(
+    bulk_create_url = "{}signed_blob_url".format(
+        http.get_api_url(configuration["url"], configuration["project"]))
+    bulk_create_url = bulk_create_url.replace('v0', 'v1')
+    complete_url = "{}imagesets/{}/images_bulk".format(
         http.get_api_url(configuration["url"], configuration["project"]),
         configuration["id"])
-    complete_url = "{}imagesets/{}/images".format(
+    extend_url = "{}imagesets/{}/extend".format(
         http.get_api_url(configuration["url"], configuration["project"]),
         configuration["id"])
-    log.debug('POST: {}'.format(create_url))
+    log.debug('POST: {}'.format(extend_url))
+    # log.debug('POST: {}'.format(create_url))
+    log.debug('POST: {}'.format(bulk_create_url))
     log.debug('POST: {}'.format(complete_url))
 
     # get image paths
     file_config = configuration['file_config']
     # check colleciton id, dataset and join column name
 
-    with concurrent.futures.ThreadPoolExecutor(http.CONCURRENCY) as executor:
-        paths = _resolve_paths(file_config['paths'])
-        futures = [
-            executor.submit(
-                _upload_image,
-                path,
-                session,
-                create_url,
-                complete_url,
-                log,
-            ) for path in paths
-        ]
+    # first extend the imageset by the number of items we have to upload
+    paths = _resolve_paths(file_config['paths'])
+    http.post_json(session, extend_url, {'delta': len(paths)})
+
+    workload_size = optimal_workload_size(len(paths))
+
+    # When chunking work, futures could contain as much as 100 images at once.
+    # If the number of images does not divide cleanly into 10 or 100 (optimal)
+    # The total may be larger than reality and the image/s speed less accurate.
+    if workload_size != 1:
+        log.warn("The progress bar may have reduced accuracy when uploading larger imagesets.")  # noqa: E501
+
+# http.CONCURRENCY
+    with concurrent.futures.ThreadPoolExecutor(1) as executor:
+        # get bundles that will upload images rather than a future per image
+        futures = _get_chunk_upload_futures(
+            executor,
+            paths,
+            session,
+            bulk_create_url,
+            complete_url,
+            log,
+            workload_size
+        )
         kwargs = {
             'total': len(futures),
             'unit': 'image',
-            'unit_scale': True,
+            'unit_scale': workload_size,
             'leave': True
         }
         for f in tqdm(concurrent.futures.as_completed(futures), **kwargs):
             pass
+
+
+def optimal_workload_size(count):
+    # Just some sensible values aiming to speed up uploading large imagesets
+    if count > 2500:
+        return 100
+
+    if count < 100:
+        return 1
+
+    return 10
 
 
 def _update_join_dataset(
