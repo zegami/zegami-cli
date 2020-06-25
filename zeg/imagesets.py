@@ -157,8 +157,7 @@ def _update_file_imageset(log, session, configuration):
     if workload_size != 1:
         log.warn("The progress bar may have reduced accuracy when uploading larger imagesets.")  # noqa: E501
 
-# http.CONCURRENCY
-    with concurrent.futures.ThreadPoolExecutor(1) as executor:
+    with concurrent.futures.ThreadPoolExecutor(http.CONCURRENCY) as executor:
         # get bundles that will upload images rather than a future per image
         futures = _get_chunk_upload_futures(
             executor,
