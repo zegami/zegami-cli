@@ -37,7 +37,8 @@ def get(log, session, args):
 
 
 def _get_chunk_upload_futures(
-    executor, paths, session, create_url, complete_url, log, workload_size, offset
+    executor, paths, session, create_url,
+    complete_url, log, workload_size, offset
 ):
     """Return executable tasks with image uploads in batches.
 
@@ -147,7 +148,9 @@ def _update_file_imageset(log, session, configuration):
 
     # first extend the imageset by the number of items we have to upload
     paths = _resolve_paths(file_config['paths'])
-    extend_response = http.post_json(session, extend_url, {'delta': len(paths)})
+    extend_response = http.post_json(
+        session, extend_url, {'delta': len(paths)}
+    )
     add_offset = extend_response['new_size'] - len(paths)
 
     workload_size = optimal_workload_size(len(paths))
