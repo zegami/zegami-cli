@@ -51,14 +51,14 @@ def _get_chunk_upload_futures(
     workloads = []
     temp = []
 
-    i = offset
-    while i < total_work + offset:
+    i = 0
+    while i < total_work:
         path = paths[i]
         temp.append(path)
         i += 1
         if len(temp) == workload_size or i == total_work:
             workload_info = {
-                "start": i - len(temp),
+                "start": i - len(temp) + offset,
                 "count": len(temp),
             }
             workloads.append(executor.submit(
