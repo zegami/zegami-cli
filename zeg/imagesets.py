@@ -340,13 +340,20 @@ def _resolve_paths(paths):
     for path in paths:
         if os.path.isdir(path):
             resolved.extend(
-                entry.path for entry in os.scandir(path)
-                if entry.is_file() and entry.name.lower().endswith(allowed_ext)
+                _scan_directory_tree(path, allowed_ext)
             )
         elif os.path.isfile(path) and path.lower().endswith(allowed_ext):
             resolved.append(path)
     return resolved
-
+    
+def _scan_directory_tree(path, allowed_ext):
+    files = []
+    for entry in os.scandir(path):
+        if entry.is_file() and entry.name.lower().endswith(allowed_ext):
+            files.append(entry.path)
+        if entry.is_dir():
+            files.extend(_scan_directory_tree(path, allowed_ext))
+    return files
 
 def _upload_image(path, session, create_url, complete_url, log):
     file_name = os.path.basename(path)
