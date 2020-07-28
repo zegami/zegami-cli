@@ -355,9 +355,6 @@ def _resolve_paths(paths, should_recursive):
     """Resolve all paths to a list of files."""
     allowed_ext = tuple(MIMES.keys())
 
-    if should_recursive:
-        print('RECURSIVE PATHS ENABLED')
-
     resolved = []
     for path in paths:
         if os.path.isdir(path):
