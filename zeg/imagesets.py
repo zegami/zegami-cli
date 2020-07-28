@@ -277,7 +277,8 @@ def check_can_update(ims_type, ims):
 
 def update(log, session, args):
     configuration = config.parse_args(args, log)
-    configuration["recursive"] = args.recursive
+    if not hasattr(configuration, 'recursive'):
+        configuration["recursive"] = args.recursive
     update_from_dict(log, session, configuration)
 
 
