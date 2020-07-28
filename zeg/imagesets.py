@@ -127,7 +127,7 @@ def _upload_image_chunked(paths, session, create_url, complete_url, log, workloa
         log.error("Failed to complete workload: {}".format(ex))
 
 
-def _update_file_imageset(log, session, configuration):
+def _update_file_imageset(log, session, configuration, recursive):
     bulk_create_url = "{}signed_blob_url".format(
         http.get_api_url(configuration["url"], configuration["project"]))
     bulk_create_url = bulk_create_url.replace('v0', 'v1')
@@ -147,7 +147,7 @@ def _update_file_imageset(log, session, configuration):
     # check colleciton id, dataset and join column name
 
     # first extend the imageset by the number of items we have to upload
-    paths = _resolve_paths(file_config['paths'])
+    paths = _resolve_paths(file_config['paths'], recursive)
     extend_response = http.post_json(
         session, extend_url, {'delta': len(paths)}
     )
@@ -277,10 +277,10 @@ def check_can_update(ims_type, ims):
 
 def update(log, session, args):
     configuration = config.parse_args(args, log)
-    update_from_dict(log, session, configuration)
+    update_from_dict(log, session, configuration, args.recursive)
 
 
-def update_from_dict(log, session, configuration):
+def update_from_dict(log, session, configuration, recursive):
     """Update an image set."""
     # check for config
     ims_type = configuration["imageset_type"]
@@ -294,7 +294,7 @@ def update_from_dict(log, session, configuration):
     if ims_type == "url":
         _update_to_url_imageset(session, configuration, ims_url)
     elif ims_type == "file":
-        _update_file_imageset(log, session, configuration)
+        _update_file_imageset(log, session, configuration, recursive)
     elif ims_type == "azure_storage_container":
         if os.environ.get('AZURE_STORAGE_CONNECTION_STRING', None) is None:
             log.error(
@@ -338,16 +338,22 @@ def delete(log, session, args):
     log.warn('delete imageset command coming soon.')
 
 
-def _resolve_paths(paths):
+def _resolve_paths(paths, should_recursive):
     """Resolve all paths to a list of files."""
     allowed_ext = tuple(MIMES.keys())
 
     resolved = []
     for path in paths:
         if os.path.isdir(path):
-            resolved.extend(
-                _scan_directory_tree(path, allowed_ext)
-            )
+            if should_recursive:
+                resolved.extend(
+                    _scan_directory_tree(path, allowed_ext)
+                )
+            else:
+                resolved.extend(
+                    entry.path for entry in os.scandir(path)
+                    if entry.is_file() and entry.name.lower().endswith(allowed_ext)
+                )
         elif os.path.isfile(path) and path.lower().endswith(allowed_ext):
             resolved.append(path)
     return resolved
