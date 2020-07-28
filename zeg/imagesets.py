@@ -127,7 +127,7 @@ def _upload_image_chunked(paths, session, create_url, complete_url, log, workloa
         log.error("Failed to complete workload: {}".format(ex))
 
 
-def _update_file_imageset(log, session, configuration, recursive):
+def _update_file_imageset(log, session, configuration):
     bulk_create_url = "{}signed_blob_url".format(
         http.get_api_url(configuration["url"], configuration["project"]))
     bulk_create_url = bulk_create_url.replace('v0', 'v1')
@@ -147,7 +147,7 @@ def _update_file_imageset(log, session, configuration, recursive):
     # check colleciton id, dataset and join column name
 
     # first extend the imageset by the number of items we have to upload
-    paths = _resolve_paths(file_config['paths'], recursive)
+    paths = _resolve_paths(file_config['paths'], configuration["recursive"])
     extend_response = http.post_json(
         session, extend_url, {'delta': len(paths)}
     )
@@ -277,10 +277,11 @@ def check_can_update(ims_type, ims):
 
 def update(log, session, args):
     configuration = config.parse_args(args, log)
-    update_from_dict(log, session, configuration, args.recursive)
+    configuration["recursive"] = args.recursive
+    update_from_dict(log, session, configuration)
 
 
-def update_from_dict(log, session, configuration, recursive):
+def update_from_dict(log, session, configuration):
     """Update an image set."""
     # check for config
     ims_type = configuration["imageset_type"]
@@ -294,7 +295,7 @@ def update_from_dict(log, session, configuration, recursive):
     if ims_type == "url":
         _update_to_url_imageset(session, configuration, ims_url)
     elif ims_type == "file":
-        _update_file_imageset(log, session, configuration, recursive)
+        _update_file_imageset(log, session, configuration)
     elif ims_type == "azure_storage_container":
         if os.environ.get('AZURE_STORAGE_CONNECTION_STRING', None) is None:
             log.error(
