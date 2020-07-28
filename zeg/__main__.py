@@ -181,18 +181,6 @@ def _add_standard_args(parser):
         action='store_true',
         help='Enable verbose logging.',
     )
-    parser.add_argument(
-        '-r',
-        '--recursive',
-        action='store_true',
-        help='Enables recursion when enumerating directories.',
-    )
-    parser.add_argument(
-        '-m',
-        '--mime',
-        default=None,
-        help='Specifies the MIME type of the uploaded image files',
-    )
 
 
 if __name__ == '__main__':

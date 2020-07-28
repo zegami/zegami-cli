@@ -62,12 +62,6 @@ def create(log, session, args):
     )
     imageset_config["dataset_id"] = coll["dataset_id"]
     imageset_config["collection_id"] = coll["id"]
-
-    if not hasattr(imageset_config, 'recursive'):
-        imageset_config["recursive"] = args.recursive
-    if not hasattr(imageset_config, 'mime_type'):
-        imageset_config["mime_type"] = args.mime
-
     imagesets.update_from_dict(log, session, imageset_config)
     delta_time = datetime.now() - time_start
     log.debug("Collection uploaded in {}".format(delta_time))
