@@ -282,8 +282,12 @@ def check_can_update(ims_type, ims):
 
 def update(log, session, args):
     configuration = config.parse_args(args, log)
-    configuration["recursive"] = args.recursive
-    configuration["mime_type"] = args.mime
+
+    if not hasattr(configuration, 'recursive'):
+        configuration["recursive"] = args.recursive
+    if not hasattr(configuration, 'mime_type'):
+        configuration["mime_type"] = args.mime
+
     update_from_dict(log, session, configuration)
 
 
