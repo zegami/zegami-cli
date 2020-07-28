@@ -146,8 +146,12 @@ def _update_file_imageset(log, session, configuration):
     file_config = configuration['file_config']
     # check colleciton id, dataset and join column name
 
+    recursive = False
+    if 'recursive' in file_config:
+        recursive = file_config["recursive"]
+
     # first extend the imageset by the number of items we have to upload
-    paths = _resolve_paths(file_config['paths'], configuration["recursive"])
+    paths = _resolve_paths(file_config['paths'], recursive)
     extend_response = http.post_json(
         session, extend_url, {'delta': len(paths)}
     )
@@ -277,8 +281,6 @@ def check_can_update(ims_type, ims):
 
 def update(log, session, args):
     configuration = config.parse_args(args, log)
-    if not hasattr(configuration, 'recursive'):
-        configuration["recursive"] = args.recursive
     update_from_dict(log, session, configuration)
 
 
@@ -343,6 +345,9 @@ def delete(log, session, args):
 def _resolve_paths(paths, should_recursive):
     """Resolve all paths to a list of files."""
     allowed_ext = tuple(MIMES.keys())
+
+    if should_recursive:
+        print('RECURSIVE PATHS ENABLED')
 
     resolved = []
     for path in paths:

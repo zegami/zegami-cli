@@ -181,12 +181,6 @@ def _add_standard_args(parser):
         action='store_true',
         help='Enable verbose logging.',
     )
-    parser.add_argument(
-        '-r',
-        '--recursive',
-        action='store_true',
-        help='Enables recursion when enumerating directories.',
-    )
 
 
 if __name__ == '__main__':
