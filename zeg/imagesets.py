@@ -38,7 +38,7 @@ def get(log, session, args):
 
 def _get_chunk_upload_futures(
     executor, paths, session, create_url,
-    complete_url, log, workload_size, offset
+    complete_url, log, workload_size, offset, mime
 ):
     """Return executable tasks with image uploads in batches.
 
@@ -68,14 +68,15 @@ def _get_chunk_upload_futures(
                 create_url,
                 complete_url,
                 log,
-                workload_info
+                workload_info,
+                mime
             ))
             temp = []
 
     return workloads
 
 
-def _upload_image_chunked(paths, session, create_url, complete_url, log, workload_info):  # noqa: E501
+def _upload_image_chunked(paths, session, create_url, complete_url, log, workload_info, mime):  # noqa: E501
     results = []
 
     # get all signed urls at once
@@ -91,7 +92,10 @@ def _upload_image_chunked(paths, session, create_url, complete_url, log, workloa
         try:
             file_name = os.path.basename(fpath)
             file_ext = os.path.splitext(fpath)[-1]
-            file_mime = MIMES.get(file_ext, MIMES['.jpg'])
+            if mime is not None:
+                file_mime = mime
+            else:
+                file_mime = MIMES.get(file_ext, MIMES['.jpg'])
         except Exception as ex:
             log.error("issue with file info: {}".format(ex))
 
@@ -171,7 +175,8 @@ def _update_file_imageset(log, session, configuration):
             complete_url,
             log,
             workload_size,
-            add_offset
+            add_offset,
+            configuration["mime_type"]
         )
         kwargs = {
             'total': len(futures),
@@ -278,6 +283,7 @@ def check_can_update(ims_type, ims):
 def update(log, session, args):
     configuration = config.parse_args(args, log)
     configuration["recursive"] = args.recursive
+    configuration["mime_type"] = args.mime
     update_from_dict(log, session, configuration)
 
 
