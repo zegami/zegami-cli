@@ -372,7 +372,8 @@ def _resolve_paths(paths, should_recursive, ignore_mime):
         elif os.path.isfile(path) and whitelisted:
             resolved.append(path)
     return resolved
-    
+
+
 def _scan_directory_tree(path, allowed_ext, ignore_mime):
     files = []
     for entry in os.scandir(path):
@@ -382,6 +383,7 @@ def _scan_directory_tree(path, allowed_ext, ignore_mime):
         if entry.is_dir():
             files.extend(_scan_directory_tree(path, allowed_ext, ignore_mime))
     return files
+
 
 def _upload_image(path, session, create_url, complete_url, log):
     file_name = os.path.basename(path)
