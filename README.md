@@ -52,6 +52,10 @@ dataset_type: file
 imageset_type: file
 # Config for the file image set type
 file_config:
+# Whether to recursively scan any directories. (optional)
+    recursive: True
+# If provided, the mime-type to use when uploading images. (optional)
+    mime_type: image/jpeg
 # Path to the dataset file
     path: path/to/file/mydata.csv
 # A collection of paths to image files. Paths can be to both images and directories
