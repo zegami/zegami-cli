@@ -66,6 +66,8 @@ file_config:
 dataset_column: image_name
 ```
 
+When providing a `mime_type` property, all files in directories will be uploaded regardless of extension.
+
 If you are creating a url based imageset with a data file use these properties.
 
 The dataset_column property is used to set the column where the url is stored. You will need to include the full image url e.g. https://zegami.com/wp-content/uploads/2018/01/weatherall.svg
