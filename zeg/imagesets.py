@@ -160,6 +160,7 @@ def _update_file_imageset(log, session, configuration):
 
     # first extend the imageset by the number of items we have to upload
     paths = _resolve_paths(file_config['paths'], recursive, mime_type is not None)
+
     extend_response = http.post_json(
         session, extend_url, {'delta': len(paths)}
     )
@@ -372,7 +373,15 @@ def _resolve_paths(paths, should_recursive, ignore_mime):
         elif os.path.isfile(path) and whitelisted:
             resolved.append(path)
     return resolved
-
+    
+def _scan_directory_tree(path, allowed_ext):
+    files = []
+    for entry in os.scandir(path):
+        if entry.is_file() and entry.name.lower().endswith(allowed_ext):
+            files.append(entry.path)
+        if entry.is_dir():
+            files.extend(_scan_directory_tree(path, allowed_ext))
+    return files
 
 def _scan_directory_tree(path, allowed_ext, ignore_mime):
     files = []
