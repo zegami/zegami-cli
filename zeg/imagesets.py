@@ -146,8 +146,12 @@ def _update_file_imageset(log, session, configuration):
     file_config = configuration['file_config']
     # check colleciton id, dataset and join column name
 
+    recursive = False
+    if 'recursive' in file_config:
+        recursive = file_config["recursive"]
+
     # first extend the imageset by the number of items we have to upload
-    paths = _resolve_paths(file_config['paths'])
+    paths = _resolve_paths(file_config['paths'], recursive)
     extend_response = http.post_json(
         session, extend_url, {'delta': len(paths)}
     )
@@ -338,21 +342,34 @@ def delete(log, session, args):
     log.warn('delete imageset command coming soon.')
 
 
-def _resolve_paths(paths):
+def _resolve_paths(paths, should_recursive):
     """Resolve all paths to a list of files."""
     allowed_ext = tuple(MIMES.keys())
 
     resolved = []
     for path in paths:
         if os.path.isdir(path):
-            resolved.extend(
-                entry.path for entry in os.scandir(path)
-                if entry.is_file() and entry.name.lower().endswith(allowed_ext)
-            )
+            if should_recursive:
+                resolved.extend(
+                    _scan_directory_tree(path, allowed_ext)
+                )
+            else:
+                resolved.extend(
+                    entry.path for entry in os.scandir(path)
+                    if entry.is_file() and entry.name.lower().endswith(allowed_ext)
+                )
         elif os.path.isfile(path) and path.lower().endswith(allowed_ext):
             resolved.append(path)
     return resolved
-
+    
+def _scan_directory_tree(path, allowed_ext):
+    files = []
+    for entry in os.scandir(path):
+        if entry.is_file() and entry.name.lower().endswith(allowed_ext):
+            files.append(entry.path)
+        if entry.is_dir():
+            files.extend(_scan_directory_tree(path, allowed_ext))
+    return files
 
 def _upload_image(path, session, create_url, complete_url, log):
     file_name = os.path.basename(path)
