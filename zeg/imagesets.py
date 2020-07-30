@@ -38,7 +38,7 @@ def get(log, session, args):
 
 def _get_chunk_upload_futures(
     executor, paths, session, create_url,
-    complete_url, log, workload_size, offset
+    complete_url, log, workload_size, offset, mime
 ):
     """Return executable tasks with image uploads in batches.
 
@@ -68,14 +68,15 @@ def _get_chunk_upload_futures(
                 create_url,
                 complete_url,
                 log,
-                workload_info
+                workload_info,
+                mime
             ))
             temp = []
 
     return workloads
 
 
-def _upload_image_chunked(paths, session, create_url, complete_url, log, workload_info):  # noqa: E501
+def _upload_image_chunked(paths, session, create_url, complete_url, log, workload_info, mime):  # noqa: E501
     results = []
 
     # get all signed urls at once
@@ -91,7 +92,10 @@ def _upload_image_chunked(paths, session, create_url, complete_url, log, workloa
         try:
             file_name = os.path.basename(fpath)
             file_ext = os.path.splitext(fpath)[-1]
-            file_mime = MIMES.get(file_ext, MIMES['.jpg'])
+            if mime is not None:
+                file_mime = mime
+            else:
+                file_mime = MIMES.get(file_ext, MIMES['.jpg'])
         except Exception as ex:
             log.error("issue with file info: {}".format(ex))
 
@@ -147,11 +151,18 @@ def _update_file_imageset(log, session, configuration):
     # check colleciton id, dataset and join column name
 
     recursive = False
+    mime_type = None
     if 'recursive' in file_config:
         recursive = file_config["recursive"]
 
+    if 'mime_type' in file_config:
+        mime_type = file_config["mime_type"]
+
     # first extend the imageset by the number of items we have to upload
-    paths = _resolve_paths(file_config['paths'], recursive)
+    paths = _resolve_paths(
+        file_config['paths'], recursive, mime_type is not None
+    )
+
     extend_response = http.post_json(
         session, extend_url, {'delta': len(paths)}
     )
@@ -175,7 +186,8 @@ def _update_file_imageset(log, session, configuration):
             complete_url,
             log,
             workload_size,
-            add_offset
+            add_offset,
+            mime_type
         )
         kwargs = {
             'total': len(futures),
@@ -342,34 +354,40 @@ def delete(log, session, args):
     log.warn('delete imageset command coming soon.')
 
 
-def _resolve_paths(paths, should_recursive):
+def _resolve_paths(paths, should_recursive, ignore_mime):
     """Resolve all paths to a list of files."""
     allowed_ext = tuple(MIMES.keys())
 
     resolved = []
     for path in paths:
+        whitelisted = (path.lower().endswith(allowed_ext) or ignore_mime)
         if os.path.isdir(path):
             if should_recursive:
                 resolved.extend(
-                    _scan_directory_tree(path, allowed_ext)
+                    _scan_directory_tree(path, allowed_ext, ignore_mime)
                 )
             else:
                 resolved.extend(
                     entry.path for entry in os.scandir(path)
-                    if entry.is_file() and entry.name.lower().endswith(allowed_ext)
+                    if entry.is_file() and (
+                        entry.name.lower().endswith(allowed_ext) or ignore_mime
+                    )
                 )
-        elif os.path.isfile(path) and path.lower().endswith(allowed_ext):
+        elif os.path.isfile(path) and whitelisted:
             resolved.append(path)
     return resolved
-    
-def _scan_directory_tree(path, allowed_ext):
+
+
+def _scan_directory_tree(path, allowed_ext, ignore_mime):
     files = []
     for entry in os.scandir(path):
-        if entry.is_file() and entry.name.lower().endswith(allowed_ext):
+        whitelisted = (entry.name.lower().endswith(allowed_ext) or ignore_mime)
+        if entry.is_file() and whitelisted:
             files.append(entry.path)
         if entry.is_dir():
-            files.extend(_scan_directory_tree(path, allowed_ext))
+            files.extend(_scan_directory_tree(path, allowed_ext, ignore_mime))
     return files
+
 
 def _upload_image(path, session, create_url, complete_url, log):
     file_name = os.path.basename(path)
