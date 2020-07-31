@@ -385,7 +385,7 @@ def _scan_directory_tree(path, allowed_ext, ignore_mime):
         if entry.is_file() and whitelisted:
             files.append(entry.path)
         if entry.is_dir():
-            files.extend(_scan_directory_tree(path, allowed_ext, ignore_mime))
+            files.extend(_scan_directory_tree(entry.path, allowed_ext, ignore_mime))
     return files
 
 
