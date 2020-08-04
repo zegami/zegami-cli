@@ -186,6 +186,7 @@ def _update_file_imageset(log, session, configuration):
                 create_url,
                 complete_url,
                 log,
+                mime_type
             ) for path in paths
         ]
         kwargs = {
@@ -388,10 +389,14 @@ def _scan_directory_tree(path, allowed_ext, ignore_mime):
     return files
 
 
-def _upload_image(path, session, create_url, complete_url, log):
+def _upload_image(path, session, create_url, complete_url, log, mime):
     file_name = os.path.basename(path)
     file_ext = os.path.splitext(path)[-1]
-    file_mime = MIMES.get(file_ext, MIMES['.jpg'])
+    if mime is not None:
+        file_mime = mime
+    else:
+        file_mime = MIMES.get(file_ext, MIMES['.jpg'])
+
 
     with open(path, 'rb') as f:
         info = {
