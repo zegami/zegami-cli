@@ -397,7 +397,6 @@ def _upload_image(path, session, create_url, complete_url, log, mime):
     else:
         file_mime = MIMES.get(file_ext, MIMES['.jpg'])
 
-
     with open(path, 'rb') as f:
         info = {
             "image": {
