@@ -132,18 +132,19 @@ def _upload_image_chunked(paths, session, create_url, complete_url, log, workloa
 
 
 def _update_file_imageset(log, session, configuration):
-    bulk_create_url = "{}signed_blob_url".format(
-        http.get_api_url(configuration["url"], configuration["project"]))
-    bulk_create_url = bulk_create_url.replace('v0', 'v1')
-    complete_url = "{}imagesets/{}/images_bulk".format(
+    create_url = "{}imagesets/{}/image_url".format(
         http.get_api_url(configuration["url"], configuration["project"]),
         configuration["id"])
-    extend_url = "{}imagesets/{}/extend".format(
+    # bulk_create_url = bulk_create_url.replace('v0', 'v1')
+    complete_url = "{}imagesets/{}/images".format(
         http.get_api_url(configuration["url"], configuration["project"]),
         configuration["id"])
-    log.debug('POST: {}'.format(extend_url))
-    # log.debug('POST: {}'.format(create_url))
-    log.debug('POST: {}'.format(bulk_create_url))
+    # extend_url = "{}imagesets/{}/extend".format(
+    #     http.get_api_url(configuration["url"], configuration["project"]),
+    #     configuration["id"])
+    # log.debug('POST: {}'.format(extend_url))
+    log.debug('POST: {}'.format(create_url))
+    # log.debug('POST: {}'.format(bulk_create_url))
     log.debug('POST: {}'.format(complete_url))
 
     # get image paths
@@ -163,36 +164,35 @@ def _update_file_imageset(log, session, configuration):
         file_config['paths'], recursive, mime_type is not None
     )
 
-    extend_response = http.post_json(
-        session, extend_url, {'delta': len(paths)}
-    )
-    add_offset = extend_response['new_size'] - len(paths)
+    # extend_response = http.post_json(
+    #     session, extend_url, {'delta': len(paths)}
+    # )
+    # add_offset = extend_response['new_size'] - len(paths)
 
-    workload_size = optimal_workload_size(len(paths))
+    # workload_size = optimal_workload_size(len(paths))
 
     # When chunking work, futures could contain as much as 100 images at once.
     # If the number of images does not divide cleanly into 10 or 100 (optimal)
     # The total may be larger than reality and the image/s speed less accurate.
-    if workload_size != 1:
-        log.warn("The progress bar may have reduced accuracy when uploading larger imagesets.")  # noqa: E501
+    # if workload_size != 1:
+    #     log.warn("The progress bar may have reduced accuracy when uploading larger imagesets.")  # noqa: E501
 
     with concurrent.futures.ThreadPoolExecutor(http.CONCURRENCY) as executor:
-        # get bundles that will upload images rather than a future per image
-        futures = _get_chunk_upload_futures(
-            executor,
-            paths,
-            session,
-            bulk_create_url,
-            complete_url,
-            log,
-            workload_size,
-            add_offset,
-            mime_type
-        )
+        futures = [
+            executor.submit(
+                _upload_image,
+                path,
+                session,
+                create_url,
+                complete_url,
+                log,
+                mime_type
+            ) for path in paths
+        ]
         kwargs = {
             'total': len(futures),
             'unit': 'image',
-            'unit_scale': workload_size,
+            'unit_scale': True,
             'leave': True
         }
         for f in tqdm(concurrent.futures.as_completed(futures), **kwargs):
@@ -389,10 +389,13 @@ def _scan_directory_tree(path, allowed_ext, ignore_mime):
     return files
 
 
-def _upload_image(path, session, create_url, complete_url, log):
+def _upload_image(path, session, create_url, complete_url, log, mime):
     file_name = os.path.basename(path)
     file_ext = os.path.splitext(path)[-1]
-    file_mime = MIMES.get(file_ext, MIMES['.jpg'])
+    if mime is not None:
+        file_mime = mime
+    else:
+        file_mime = MIMES.get(file_ext, MIMES['.jpg'])
 
     with open(path, 'rb') as f:
         info = {
