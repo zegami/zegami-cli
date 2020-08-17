@@ -48,7 +48,7 @@ def create(log, session, args):
             coll[key] = configuration[key]
 
     # replace empty description with an empty string
-    if coll["description"] is None:
+    if 'description' in coll and coll["description"] is None:
         coll["description"] = ''
 
     # create the collection
