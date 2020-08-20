@@ -322,7 +322,7 @@ def update_from_dict(log, session, configuration):
         _update_to_url_imageset(session, configuration, ims_url)
     collection_id = configuration['collection_id']
     dataset_id = configuration['dataset_id']
-    dataset_column = configuration['dataset_column']
+    dataset_column = configuration.get('dataset_column') if 'dataset_column' in configuration else "__auto_join__"
     _update_join_dataset(
         log, configuration, dataset_id, dataset_column, session, collection_id)
 
