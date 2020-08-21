@@ -17,6 +17,7 @@ from . import (
 
 
 MIMES = {
+    ".bmp": "image/bmp",
     ".jpg": "image/jpeg",
     ".jpeg": "image/jpeg",
     ".png": "image/png",
