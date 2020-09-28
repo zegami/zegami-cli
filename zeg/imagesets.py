@@ -148,7 +148,7 @@ def _update_file_imageset(log, session, configuration):
     extend_url = "{}imagesets/{}/extend".format(
         http.get_api_url(configuration["url"], configuration["project"]),
         configuration["id"])
-    bake_url = "{}imagesets/{}/bake".format(
+    bake_url = "{}imagesets/{}/replace_empties".format(
         http.get_api_url(configuration["url"], configuration["project"]),
         configuration["id"])
     log.debug('POST: {}'.format(extend_url))
