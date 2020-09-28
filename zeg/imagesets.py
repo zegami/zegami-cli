@@ -206,7 +206,7 @@ def _update_file_imageset(log, session, configuration):
         }
         for f in tqdm(concurrent.futures.as_completed(futures), **kwargs):
             pass
-    
+
     _finish_bake_imageset(session, bake_url)
 
 
