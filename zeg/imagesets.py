@@ -77,10 +77,10 @@ def _get_chunk_upload_futures(
     return workloads
 
 
-def _finish_bake_imageset(session, bake_url):
+def _finish_replace_empty_imageset(session, replace_empty_url):
     # this process cleans the imageset by replacing any nulls with placeholders
     # sustained network outages during uploads & premautrely aborted uploads may lead to this
-    http.get(session, bake_url)
+    http.get(session, replace_empty_url)
 
 
 def _upload_image_chunked(paths, session, create_url, complete_url, log, workload_info, mime):  # noqa: E501
@@ -148,13 +148,13 @@ def _update_file_imageset(log, session, configuration):
     extend_url = "{}imagesets/{}/extend".format(
         http.get_api_url(configuration["url"], configuration["project"]),
         configuration["id"])
-    bake_url = "{}imagesets/{}/replace_empties".format(
+    replace_empty_url = "{}imagesets/{}/replace_empties".format(
         http.get_api_url(configuration["url"], configuration["project"]),
         configuration["id"])
     log.debug('POST: {}'.format(extend_url))
     log.debug('POST: {}'.format(bulk_create_url))
     log.debug('POST: {}'.format(complete_url))
-    log.debug('GET: {}'.format(bake_url))
+    log.debug('GET: {}'.format(replace_empty_url))
 
     # get image paths
     file_config = configuration['file_config']
@@ -172,6 +172,10 @@ def _update_file_imageset(log, session, configuration):
     paths = _resolve_paths(
         file_config['paths'], recursive, mime_type is not None
     )
+
+    if len(paths) == 0:
+        log.warn("No images detected, no images will be uploaded.")
+        return
 
     extend_response = http.post_json(
         session, extend_url, {'delta': len(paths)}
@@ -207,7 +211,7 @@ def _update_file_imageset(log, session, configuration):
         for f in tqdm(concurrent.futures.as_completed(futures), **kwargs):
             pass
 
-    _finish_bake_imageset(session, bake_url)
+    _finish_replace_empty_imageset(session, replace_empty_url)
 
 
 def optimal_workload_size(count):
