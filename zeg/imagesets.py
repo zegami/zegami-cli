@@ -77,6 +77,12 @@ def _get_chunk_upload_futures(
     return workloads
 
 
+def _finish_replace_empty_imageset(session, replace_empty_url):
+    # this process cleans the imageset by replacing any nulls with placeholders
+    # sustained network outages during uploads & premautrely aborted uploads may lead to this
+    http.get(session, replace_empty_url)
+
+
 def _upload_image_chunked(paths, session, create_url, complete_url, log, workload_info, mime):  # noqa: E501
     results = []
 
@@ -133,20 +139,22 @@ def _upload_image_chunked(paths, session, create_url, complete_url, log, workloa
 
 
 def _update_file_imageset(log, session, configuration):
-    create_url = "{}imagesets/{}/image_url".format(
+    bulk_create_url = "{}signed_blob_url".format(
+        http.get_api_url(configuration["url"], configuration["project"]))
+    bulk_create_url = bulk_create_url.replace('v0', 'v1')
+    complete_url = "{}imagesets/{}/images_bulk".format(
         http.get_api_url(configuration["url"], configuration["project"]),
         configuration["id"])
-    # bulk_create_url = bulk_create_url.replace('v0', 'v1')
-    complete_url = "{}imagesets/{}/images".format(
+    extend_url = "{}imagesets/{}/extend".format(
         http.get_api_url(configuration["url"], configuration["project"]),
         configuration["id"])
-    # extend_url = "{}imagesets/{}/extend".format(
-    #     http.get_api_url(configuration["url"], configuration["project"]),
-    #     configuration["id"])
-    # log.debug('POST: {}'.format(extend_url))
-    log.debug('POST: {}'.format(create_url))
-    # log.debug('POST: {}'.format(bulk_create_url))
+    replace_empty_url = "{}imagesets/{}/replace_empties".format(
+        http.get_api_url(configuration["url"], configuration["project"]),
+        configuration["id"])
+    log.debug('POST: {}'.format(extend_url))
+    log.debug('POST: {}'.format(bulk_create_url))
     log.debug('POST: {}'.format(complete_url))
+    log.debug('GET: {}'.format(replace_empty_url))
 
     # get image paths
     file_config = configuration['file_config']
@@ -165,39 +173,45 @@ def _update_file_imageset(log, session, configuration):
         file_config['paths'], recursive, mime_type is not None
     )
 
-    # extend_response = http.post_json(
-    #     session, extend_url, {'delta': len(paths)}
-    # )
-    # add_offset = extend_response['new_size'] - len(paths)
+    if len(paths) == 0:
+        log.warn("No images detected, no images will be uploaded.")
+        return
 
-    # workload_size = optimal_workload_size(len(paths))
+    extend_response = http.post_json(
+        session, extend_url, {'delta': len(paths)}
+    )
+    add_offset = extend_response['new_size'] - len(paths)
+
+    workload_size = optimal_workload_size(len(paths))
 
     # When chunking work, futures could contain as much as 100 images at once.
     # If the number of images does not divide cleanly into 10 or 100 (optimal)
     # The total may be larger than reality and the image/s speed less accurate.
-    # if workload_size != 1:
-    #     log.warn("The progress bar may have reduced accuracy when uploading larger imagesets.")  # noqa: E501
+    if workload_size != 1:
+        log.warn("The progress bar may have reduced accuracy when uploading larger imagesets.")  # noqa: E501
 
     with concurrent.futures.ThreadPoolExecutor(http.CONCURRENCY) as executor:
-        futures = [
-            executor.submit(
-                _upload_image,
-                path,
-                session,
-                create_url,
-                complete_url,
-                log,
-                mime_type
-            ) for path in paths
-        ]
+        futures = _get_chunk_upload_futures(
+            executor,
+            paths,
+            session,
+            bulk_create_url,
+            complete_url,
+            log,
+            workload_size,
+            add_offset,
+            mime_type
+        )
         kwargs = {
             'total': len(futures),
             'unit': 'image',
-            'unit_scale': True,
+            'unit_scale': workload_size,
             'leave': True
         }
         for f in tqdm(concurrent.futures.as_completed(futures), **kwargs):
             pass
+
+    _finish_replace_empty_imageset(session, replace_empty_url)
 
 
 def optimal_workload_size(count):
