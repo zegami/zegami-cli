@@ -108,6 +108,8 @@ definitions:
         - url
       url_template:
         type: string
+      image_fetch_headers:
+        type: object
   azure_storage_container_properties:
     properties:
       imageset_type:

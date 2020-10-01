@@ -84,6 +84,9 @@ imageset_type: url
 dataset_column: image_name
 # Url pattern - python format string where {} is the name of the image name (from data file)
 url_template: https://example.com/images/{}?accesscode=abc3e20423423497
+# Custom headers to add when fetching the image
+image_fetch_headers:
+  Accept: image/png
 dataset_type: file
 # Config for the file data set type
 file_config:
@@ -327,6 +330,11 @@ dataset_id: 5ad3a99b75f3b30001732f36
 dataset_column: image_name
 # Url pattern - python format string where {} is the name of the image name (from data file)
 url_template: https://example.com/images/{}?accesscode=abc3e20423423497
+# Optional set of headers to include with the requests to fetch each image,
+#  e.g. for auth or to specify mime type
+image_fetch_headers:
+  Accept: application/dicom
+  Authorization: Bearer user:pass
 ```
 
 ### Azure storage imageset
