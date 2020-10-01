@@ -80,7 +80,7 @@ def _get_chunk_upload_futures(
 def _finish_replace_empty_imageset(session, replace_empty_url):
     # this process cleans the imageset by replacing any nulls with placeholders
     # sustained network outages during uploads & premautrely aborted uploads may lead to this
-    http.get(session, replace_empty_url)
+    http.post_json(session, replace_empty_url, {})
 
 
 def _upload_image_chunked(paths, session, create_url, complete_url, log, workload_info, mime):  # noqa: E501
@@ -142,7 +142,7 @@ def _update_file_imageset(log, session, configuration):
     bulk_create_url = "{}signed_blob_url".format(
         http.get_api_url(configuration["url"], configuration["project"]))
     bulk_create_url = bulk_create_url.replace('v0', 'v1')
-    complete_url = "{}imagesets/{}/images_bulk".format(
+    complete_url = "{}imagesets/{}/images_bulk3".format(
         http.get_api_url(configuration["url"], configuration["project"]),
         configuration["id"])
     extend_url = "{}imagesets/{}/extend".format(
@@ -154,7 +154,7 @@ def _update_file_imageset(log, session, configuration):
     log.debug('POST: {}'.format(extend_url))
     log.debug('POST: {}'.format(bulk_create_url))
     log.debug('POST: {}'.format(complete_url))
-    log.debug('GET: {}'.format(replace_empty_url))
+    log.debug('POST: {}'.format(replace_empty_url))
 
     # get image paths
     file_config = configuration['file_config']
