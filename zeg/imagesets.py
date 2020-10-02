@@ -142,7 +142,7 @@ def _update_file_imageset(log, session, configuration):
     bulk_create_url = "{}signed_blob_url".format(
         http.get_api_url(configuration["url"], configuration["project"]))
     bulk_create_url = bulk_create_url.replace('v0', 'v1')
-    complete_url = "{}imagesets/{}/images_bulk3".format(
+    complete_url = "{}imagesets/{}/images_bulk".format(
         http.get_api_url(configuration["url"], configuration["project"]),
         configuration["id"])
     extend_url = "{}imagesets/{}/extend".format(
