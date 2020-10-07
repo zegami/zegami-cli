@@ -320,11 +320,18 @@ def update_from_dict(log, session, configuration):
         http.get_api_url(configuration["url"], configuration["project"]),
         ims_id,
     )
+    preemptive_join = ims_type == "file"
+    collection_id = configuration['collection_id']
+    dataset_id = configuration['dataset_id']
+    dataset_column = configuration.get('dataset_column') if 'dataset_column' in configuration else "__auto_join__"
     ims = http.get(session, ims_url)["imageset"]
     check_can_update(ims_type, ims)
     if ims_type == "url":
         _update_to_url_imageset(session, configuration, ims_url)
     elif ims_type == "file":
+        if preemptive_join:
+            _update_join_dataset(
+                log, configuration, dataset_id, dataset_column, session, collection_id)
         _update_file_imageset(log, session, configuration)
     elif ims_type == "azure_storage_container":
         if os.environ.get('AZURE_STORAGE_CONNECTION_STRING', None) is None:
@@ -335,11 +342,9 @@ def update_from_dict(log, session, configuration):
         configuration["url_template"] = azure_blobs.generate_signed_url(
             configuration["container_name"])
         _update_to_url_imageset(session, configuration, ims_url)
-    collection_id = configuration['collection_id']
-    dataset_id = configuration['dataset_id']
-    dataset_column = configuration.get('dataset_column') if 'dataset_column' in configuration else "__auto_join__"
-    _update_join_dataset(
-        log, configuration, dataset_id, dataset_column, session, collection_id)
+    if not preemptive_join:
+        _update_join_dataset(
+            log, configuration, dataset_id, dataset_column, session, collection_id)
 
 
 def _update_to_url_imageset(session, configuration, ims_url):
