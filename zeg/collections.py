@@ -59,7 +59,9 @@ def create(log, session, args):
     dataset_config = dict(
         configuration, id=coll["upload_dataset_id"]
     )
-    datasets.update_from_dict(log, session, dataset_config)
+    if 'file_config' in dataset_config: 
+        if 'path' in dataset_config['file_config'] or 'directory' in dataset_config['file_config']:
+            datasets.update_from_dict(log, session, dataset_config)
 
     imageset_config = dict(
         configuration, id=coll["imageset_id"]

@@ -144,14 +144,12 @@ anyOf:
     - required:
       - collection_id
       - dataset_id
-      - dataset_column
       - imageset_type
   - allOf:
     - $ref: '#/definitions/azure_storage_container_properties'
     - required:
       - collection_id
       - dataset_id
-      - dataset_column
       - imageset_type
       - container_name
 # collection create should have a name and contain all configuration but no ids
@@ -177,12 +175,28 @@ anyOf:
     - allOf:
       - $ref: '#/definitions/url_imageset_properties'
       - required:
-        - dataset_column
         - imageset_type
     - allOf:
       - $ref: '#/definitions/azure_storage_container_properties'
       - required:
-        - dataset_column
+        - imageset_type
+        - container_name
+# images only collection
+- allOf:
+  - $ref: '#/definitions/collection'
+  - oneOf:
+    - allOf:
+      - $ref: '#/definitions/file_imageset_properties'
+      - required:
+        - file_config
+        - imageset_type
+    - allOf:
+      - $ref: '#/definitions/url_imageset_properties'
+      - required:
+        - imageset_type
+    - allOf:
+      - $ref: '#/definitions/azure_storage_container_properties'
+      - required:
         - imageset_type
         - container_name
 # collection publish stuff
