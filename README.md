@@ -67,7 +67,7 @@ dataset_column: image_name
 ```
 If `dataset_column` property is not provided, the backend will automatically select the column with the closest match.
 
-If you want to create an images only collection then you do not need to provide `dataset_type` and `path` property.
+To create a collection with only images the `dataset_type` and `path` properties can be omitted.
 
 When providing a `mime_type` property, all files in directories will be uploaded regardless of extension.
 
