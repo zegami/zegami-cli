@@ -65,7 +65,7 @@ file_config:
 # Name of the column in the dataset that contains the image name. (optional)
 dataset_column: image_name
 ```
-If `dataset_column` property is not provided, the backend will automatically select the column with the closest match.
+If the `dataset_column` property is not provided, the backend will automatically select the column with the closest match.
 
 To create a collection with only images the `dataset_type` and `path` properties can be omitted.
 
