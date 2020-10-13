@@ -71,8 +71,11 @@ definitions:
         type: string
         description: name for the collection
       description:
-        type: string
-        description: descriptive text for the collection
+        oneOf:
+          - type: string
+            description: descriptive text for the collection
+          - enum:
+            - null
   file_dataset:
     properties:
       dataset_type:
