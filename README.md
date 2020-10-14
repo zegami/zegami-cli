@@ -46,7 +46,7 @@ The following config properties are supported for file based imageset and datase
 # The name of the collection
 name: file based
 description: an example collection with a file based imageset and dataset
-# The type of data set. For now this needs to be set to 'file'
+# The type of data set. For now this needs to be set to 'file'. (optional)
 dataset_type: file
 # Config for the file data set type
 imageset_type: file
@@ -56,7 +56,7 @@ file_config:
     recursive: True
 # If provided, the mime-type to use when uploading images. (optional)
     mime_type: image/jpeg
-# Path to the dataset file
+# Path to the dataset file. (optional)
     path: path/to/file/mydata.csv
 # A collection of paths to image files. Paths can be to both images and directories
     paths:
@@ -65,7 +65,9 @@ file_config:
 # Name of the column in the dataset that contains the image name. (optional)
 dataset_column: image_name
 ```
-If dataset_column is not provided, the backend will automatically select the column with the closest match.
+If the `dataset_column` property is not provided, the backend will automatically select the column with the closest match.
+
+To create a collection with only images the `dataset_type` and `path` properties can be omitted.
 
 When providing a `mime_type` property, all files in directories will be uploaded regardless of extension.
 
@@ -80,7 +82,7 @@ name: url based
 description: an example collection with a file based dataset where images are to be downloaded from urls
 # The type of image set. for now this needs to be set to 'url'
 imageset_type: url
-# Name of the column in the dataset that contains the image url
+# Name of the column in the dataset that contains the image url. (optional)
 dataset_column: image_name
 # Url pattern - python format string where {} is the name of the image name (from data file)
 url_template: https://example.com/images/{}?accesscode=abc3e20423423497
@@ -90,7 +92,7 @@ image_fetch_headers:
 dataset_type: file
 # Config for the file data set type
 file_config:
-# Path to the dataset file
+# Path to the dataset file. (optional)
     path: path/to/file/mydata.csv
 ```
 
@@ -101,16 +103,16 @@ If you are creating an imageset on Azure from a private azure bucket with a loca
 name: azure bucket based
 # The description of the collection
 description: an example collection with a file based dataset where images are to be downloaded from an azure bucket
-dataset_type: file
+dataset_type: file. (optional)
 # Config for the file data set type
 file_config:
-# Path to the dataset file
+# Path to the dataset file. (optional)
     path: path/to/file/mydata.csv
 # The type of image set. for now this needs to be set to 'url'
 imageset_type: azure_storage_container
 # Name of the container
 container_name: my_azure_blobs
-# Name of the column in the dataset that contains the image url
+# Name of the column in the dataset that contains the image url. (optional)
 dataset_column: image_name
 
 # Note that the storage account connection string should also be made available via environment variable AZURE_STORAGE_CONNECTION_STRING
