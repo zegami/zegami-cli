@@ -405,7 +405,9 @@ def _resolve_paths(paths, should_recursive, ignore_mime):
 def _scan_directory_tree(path, allowed_ext, ignore_mime):
     files = []
     for entry in os.scandir(path):
-        whitelisted = (entry.name.lower().endswith(allowed_ext) or ignore_mime)
+        whitelisted = entry.name.lower().endswith(allowed_ext)
+        if ignore_mime:
+            whitelisted = True
         if entry.is_file() and whitelisted:
             files.append(entry.path)
         if entry.is_dir():
