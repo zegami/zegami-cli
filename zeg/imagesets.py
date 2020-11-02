@@ -27,7 +27,7 @@ MIMES = {
     ".dcm": "application/dicom",
 }
 
-BLACKLIST = tuple(
+BLACKLIST = (
     ".yaml",
     "thumbs.db",
     ".ds_store",
