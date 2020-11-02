@@ -27,6 +27,15 @@ MIMES = {
     ".dcm": "application/dicom",
 }
 
+BLACKLIST = (
+    ".yaml",
+    "thumbs.db",
+    ".ds_store",
+    ".dll",
+    ".sys",
+    ".txt",
+)
+
 
 def get(log, session, args):
     """Get an image set."""
@@ -170,7 +179,7 @@ def _update_file_imageset(log, session, configuration):
 
     # first extend the imageset by the number of items we have to upload
     paths = _resolve_paths(
-        file_config['paths'], recursive, mime_type is not None
+        file_config['paths'], recursive, mime_type is not None, log
     )
 
     if len(paths) == 0:
@@ -378,9 +387,10 @@ def delete(log, session, args):
     log.warn('delete imageset command coming soon.')
 
 
-def _resolve_paths(paths, should_recursive, ignore_mime):
+def _resolve_paths(paths, should_recursive, ignore_mime, log):
     """Resolve all paths to a list of files."""
     allowed_ext = tuple(MIMES.keys())
+    blacklist_ext = BLACKLIST
 
     resolved = []
     for path in paths:
@@ -388,13 +398,14 @@ def _resolve_paths(paths, should_recursive, ignore_mime):
         if os.path.isdir(path):
             if should_recursive:
                 resolved.extend(
-                    _scan_directory_tree(path, allowed_ext, ignore_mime)
+                    _scan_directory_tree(path, allowed_ext, blacklist_ext, ignore_mime, log)
                 )
             else:
                 resolved.extend(
                     entry.path for entry in os.scandir(path)
                     if entry.is_file() and (
-                        entry.name.lower().endswith(allowed_ext) or ignore_mime
+                        entry.name.lower().endswith(allowed_ext) or
+                        (ignore_mime and not entry.name.lower().endswith(blacklist_ext))
                     )
                 )
         elif os.path.isfile(path) and whitelisted:
@@ -402,14 +413,20 @@ def _resolve_paths(paths, should_recursive, ignore_mime):
     return resolved
 
 
-def _scan_directory_tree(path, allowed_ext, ignore_mime):
+def _scan_directory_tree(path, allowed_ext, blacklist_ext, ignore_mime, log):
     files = []
     for entry in os.scandir(path):
-        whitelisted = (entry.name.lower().endswith(allowed_ext) or ignore_mime)
+        whitelisted = entry.name.lower().endswith(allowed_ext)
+        if ignore_mime and not whitelisted:
+            whitelisted = True
+        # Some files should not be uploaded even if we are forcing mime type.
+        if entry.name.lower().endswith(blacklist_ext):
+            whitelisted = False
+            log.debug("Ignoring file due to disallowed extension: {}".format(entry.name))
         if entry.is_file() and whitelisted:
             files.append(entry.path)
         if entry.is_dir():
-            files.extend(_scan_directory_tree(entry.path, allowed_ext, ignore_mime))
+            files.extend(_scan_directory_tree(entry.path, allowed_ext, blacklist_ext, ignore_mime, log))
     return files
 
 
