@@ -426,7 +426,7 @@ def _resolve_paths(paths, should_recursive, ignore_mime, log):
 def format_bytes(size):
     power = 1024
     n = 0
-    power_labels = {0 : '', 1: 'K', 2: 'B', 3: 'G', 4: 'T'}
+    power_labels = {0: '', 1: 'K', 2: 'B', 3: 'G', 4: 'T'}
     while size > power:
         size /= power
         n += 1
