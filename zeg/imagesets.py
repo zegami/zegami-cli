@@ -36,6 +36,10 @@ BLACKLIST = (
     ".txt",
 )
 
+# When a file is larger than 256MB throw up a warning.
+# Collection processing may be unreliable when handling files larger than this.
+UPLOAD_WARNING_LIMIT = 268435456
+
 
 def get(log, session, args):
     """Get an image set."""
@@ -416,7 +420,7 @@ def _resolve_paths(paths, should_recursive, ignore_mime, log):
     for path in resolved:
         size = os.path.getsize(path)
         total_size += size
-        if size > 268435456 and not warned:
+        if size > UPLOAD_WARNING_LIMIT and not warned:
             log.warn("One or more files exceeds 256MB, collection processing may be unreliable.")
             warned = True
     log.debug("Total upload size: {}".format(format_bytes(total_size)))
