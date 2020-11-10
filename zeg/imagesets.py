@@ -410,7 +410,27 @@ def _resolve_paths(paths, should_recursive, ignore_mime, log):
                 )
         elif os.path.isfile(path) and whitelisted:
             resolved.append(path)
+
+    total_size = 0
+    warned = False
+    for path in resolved:
+        size = os.path.getsize(path)
+        total_size += size
+        if size > 268435456 and not warned:
+            log.warn("One or more files exceeds 256MB, collection processing may be unreliable.")
+            warned = True
+    log.debug("Total upload size: {}".format(format_bytes(total_size)))
     return resolved
+
+
+def format_bytes(size):
+    power = 1024
+    n = 0
+    power_labels = {0 : '', 1: 'K', 2: 'B', 3: 'G', 4: 'T'}
+    while size > power:
+        size /= power
+        n += 1
+    return "{}{}B".format(round(size, 2), power_labels[n])
 
 
 def _scan_directory_tree(path, allowed_ext, blacklist_ext, ignore_mime, log):
