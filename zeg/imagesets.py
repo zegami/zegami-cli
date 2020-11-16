@@ -34,6 +34,10 @@ BLACKLIST = (
     ".dll",
     ".sys",
     ".txt",
+    ".tsv",
+    ".csv",
+    ".yaml",
+    ".json"
 )
 
 # When a file is larger than 256MB throw up a warning.
