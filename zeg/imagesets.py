@@ -268,6 +268,8 @@ def _update_join_dataset(
                 'dataset_column': dataset_column,
             },
         },
+        'processing_category': 'join',
+        'node_groups': ['collection_{}'.format(collection_id)]
     }
     imageset_dataset_join_url = "{}datasets/{}".format(
         http.get_api_url(configuration["url"], configuration["project"]),
