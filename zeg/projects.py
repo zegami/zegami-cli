@@ -1,12 +1,7 @@
 # Copyright 2018 Zegami Ltd
 
-"""Collection commands."""
-import sys
-
+"""Project commands."""
 from . import (
-    config,
-    datasets,
-    imagesets,
     http,
 )
 
