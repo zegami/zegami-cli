@@ -16,6 +16,7 @@ from . import (
     datasets,
     http,
     imagesets,
+    projects,
     log,
 )
 
@@ -60,6 +61,12 @@ def main():
             'help': 'Create a resource',
             'resources': {
                 'collections': collections.create,
+            }
+        },
+        'list': {
+            'help': 'Lists entries of a resource',
+            'resources': {
+                'projects': projects.enumerate,
             }
         },
         'get': {
