@@ -29,11 +29,13 @@ MIMES = {
 
 BLACKLIST = (
     ".yaml",
+    ".yml",
     "thumbs.db",
     ".ds_store",
     ".dll",
     ".sys",
     ".txt",
+    ".ini",
     ".tsv",
     ".csv",
     ".json"
