@@ -246,10 +246,6 @@ def optimal_workload_size(count):
 def _update_join_dataset(
         log, configuration, dataset_id, dataset_column, session,
         collection_id):
-    dataset_create_url = "{}datasets/".format(
-        http.get_api_url(configuration["url"], configuration["project"])
-    )
-
     collection_url = "{}collections/{}".format(
         http.get_api_url(configuration["url"], configuration["project"]),
         collection_id,
@@ -278,32 +274,6 @@ def _update_join_dataset(
     )
     log.debug('PUT: {}'.format(imageset_dataset_join_url))
     http.put_json(session, imageset_dataset_join_url, join_data)
-
-    dz_json_join_url = "{}datasets/{}".format(
-        http.get_api_url(configuration["url"], configuration["project"]),
-        collection["dz_json_dataset_id"]
-    )
-
-    # Get existing dz json join dataset (get tilesize etc from this)
-    log.debug('GET (dz json): {}'.format(dz_json_join_url))
-    dz_json_join = http.get(session, dz_json_join_url)
-
-    # create new dz json based on existing
-    for_create = {
-        "name": dz_json_join['dataset']["name"],
-        "source": dz_json_join['dataset']["source"],
-    }
-    for_create["source"]["dataset_id"] = collection["imageset_dataset_join_id"]
-
-    # Add new dz json dataset, which will become the used one after processing
-    log.debug('POST: {}'.format(dataset_create_url))
-    dz_json_response = http.post_json(session, dataset_create_url, for_create)
-
-    # TODO wait until processing finished before switching to new dz_json
-    # Point collection at new dz json
-    collection['dz_json_dataset_id'] = dz_json_response["dataset"]['id']
-    log.debug('PUT: {}'.format(collection_url))
-    http.put_json(session, collection_url, collection)
 
 
 def get_from_dict(data_dict, maplist):
