@@ -246,10 +246,6 @@ def optimal_workload_size(count):
 def _update_join_dataset(
         log, configuration, dataset_id, dataset_column, session,
         collection_id):
-    dataset_create_url = "{}datasets/".format(
-        http.get_api_url(configuration["url"], configuration["project"])
-    )
-
     collection_url = "{}collections/{}".format(
         http.get_api_url(configuration["url"], configuration["project"]),
         collection_id,
