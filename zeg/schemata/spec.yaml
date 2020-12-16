@@ -76,6 +76,9 @@ definitions:
             description: descriptive text for the collection
           - enum:
             - null
+        enable_clustering:
+          type: boolean
+          description: whether to enable clustering for the collection
   file_dataset:
     properties:
       dataset_type:
