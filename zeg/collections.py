@@ -112,7 +112,7 @@ def publish(log, session, args):
         log.error('Configuration file path missing')
         sys.exit(1)
 
-    configuration = config.parse_config(args.config)
+    configuration = config.parse_config(args.config, log)
 
     # get publish details
     publish_config = configuration['publish_config']
