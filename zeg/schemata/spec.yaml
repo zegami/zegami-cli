@@ -206,27 +206,27 @@ anyOf:
         - dataset_type
         - sql_config
   - image_sources:
-    type: array
-    items:
-      type: object
-      properties:
-        source_name:
-          type: string
-        - oneOf:
-          - allOf:
-            - $ref: '#/definitions/file_imageset_properties'
-            - required:
-              - file_config
-              - imageset_type
-          - allOf:
-            - $ref: '#/definitions/url_imageset_properties'
-            - required:
-              - imageset_type
-          - allOf:
-            - $ref: '#/definitions/azure_storage_container_properties'
-            - required:
-              - imageset_type
-              - container_name
+      type: array
+      items:
+        type: object
+        properties:
+          source_name:
+            type: string
+          oneOf:
+            - allOf:
+              - $ref: '#/definitions/file_imageset_properties'
+              - required:
+                - file_config
+                - imageset_type
+            - allOf:
+              - $ref: '#/definitions/url_imageset_properties'
+              - required:
+                - imageset_type
+            - allOf:
+              - $ref: '#/definitions/azure_storage_container_properties'
+              - required:
+                - imageset_type
+                - container_name
 # images only collection
 - allOf:
   - $ref: '#/definitions/collection'

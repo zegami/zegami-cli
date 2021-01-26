@@ -38,7 +38,7 @@ def create(log, session, args):
         log.error('Collection name missing from config file')
         sys.exit(1)
     
-    collection_version = configuration['collection_version']
+    collection_version = configuration.get('collection_version', 1)
 
     # use name from config
     coll = {
