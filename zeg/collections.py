@@ -76,6 +76,8 @@ def create(log, session, args):
         for source in configuration['image_sources']:
             source_name = source['source_name']
             imageset_config = dict(source)
+            imageset_config["url"] = configuration["url"]
+            imageset_config["project"] = configuration["project"]
             imageset_config["dataset_id"] = coll["dataset_id"]
             imageset_config["collection_id"] = coll["id"]
             imageset_config["id"] = coll["image_sources"][source_name]["imageset_id"]

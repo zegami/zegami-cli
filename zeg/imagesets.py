@@ -255,6 +255,12 @@ def _update_join_dataset(
     collection_response = http.get(session, collection_url)
     collection = collection_response['collection']
 
+    if 'source_name' in configuration:
+        source_name = configuration['source_name']
+        ims_ds_join_id = collection['image_sources'][source_name]["imageset_dataset_join_id"]
+    else:
+        ims_ds_join_id = collection["imageset_dataset_join_id"]
+
     # update the join dataset
     join_data = {
         'name': 'join dataset',
@@ -270,7 +276,7 @@ def _update_join_dataset(
     }
     imageset_dataset_join_url = "{}datasets/{}".format(
         http.get_api_url(configuration["url"], configuration["project"]),
-        collection["imageset_dataset_join_id"]
+        ims_ds_join_id
     )
     log.debug('PUT: {}'.format(imageset_dataset_join_url))
     http.put_json(session, imageset_dataset_join_url, join_data)
