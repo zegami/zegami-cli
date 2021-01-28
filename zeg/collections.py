@@ -37,7 +37,7 @@ def create(log, session, args):
     if "name" not in configuration:
         log.error('Collection name missing from config file')
         sys.exit(1)
-    
+
     collection_version = configuration.get('collection_version', 1)
 
     # use name from config
@@ -52,7 +52,7 @@ def create(log, session, args):
     # replace empty description with an empty string
     if 'description' in coll and coll["description"] is None:
         coll["description"] = ''
-    
+
     # check multiple image sources config
     if collection_version == 2 and 'image_sources' in configuration:
         coll['version'] = 2
