@@ -76,6 +76,9 @@ def create(log, session, args):
         for source in configuration['image_sources']:
             source_name = source['source_name']
             imageset_config = dict(source)
+            for property in ['paths', 'recursive', 'mime_type']:
+                if property in source:
+                    imageset_config["file_config"][property] = source[property]
             imageset_config["url"] = configuration["url"]
             imageset_config["project"] = configuration["project"]
             imageset_config["dataset_id"] = coll["dataset_id"]
