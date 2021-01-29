@@ -58,7 +58,7 @@ def create(log, session, args):
         coll['version'] = 2
         coll['image_sources'] = []
         for source in configuration['image_sources']:
-            coll['image_sources'].append(source['source_name'])
+            coll['image_sources'].append({'name': source['source_name']})
 
     # create the collection
     response_json = http.post_json(session, url, coll)
