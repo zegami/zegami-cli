@@ -138,7 +138,7 @@ image_sources:
     # source from file based imageset
     - paths:
         - a/directory/path
-      # source_name is a compulory field
+      # source_name is a compulsory field
       source_name: first_source
       # Name of the column in the dataset that contains the image name. (optional)
       dataset_column: path
