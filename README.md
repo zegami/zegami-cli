@@ -130,8 +130,6 @@ collection_version: 2
 # The type of data set. For now this needs to be set to 'file'. (optional)
 dataset_type: file
 file_config:
-    # Whether to recursively scan any directories. (optional)
-    recursive: True
     # Path to the dataset file. (optional)
     path: path/to/file/mydata.csv
 image_sources:

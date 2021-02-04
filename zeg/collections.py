@@ -58,6 +58,12 @@ def create(log, session, args):
         coll['version'] = 2
         coll['image_sources'] = []
         for source in configuration['image_sources']:
+            if "source_name" not in source:
+                log.error('Image source name missing from config file')
+                sys.exit(1)
+            if source['source_name'] is None:
+                log.error('Image source name cannot be empty')
+                sys.exit(1)
             coll['image_sources'].append({'name': source['source_name']})
 
     # create the collection
