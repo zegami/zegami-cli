@@ -127,7 +127,7 @@ If you are using SQL data see below for config
 name: file based
 description: an example collection with a file based imageset and dataset
 collection_version: 2
-# The type of data set. For now this needs to be set to 'file'. (optional)
+# The type of data set. For now this needs to be set to 'file'.
 dataset_type: file
 file_config:
     # Path to the dataset file. (optional)
