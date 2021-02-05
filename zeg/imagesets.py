@@ -257,7 +257,9 @@ def _update_join_dataset(
 
     if 'source_name' in configuration:
         source_name = configuration['source_name']
-        ims_ds_join_id = collection['image_sources'][source_name]["imageset_dataset_join_id"]
+        for source in collection["image_sources"]:
+            if source['source_id'] == source_name:
+                ims_ds_join_id = source["imageset_dataset_join_id"]
     else:
         ims_ds_join_id = collection["imageset_dataset_join_id"]
 
