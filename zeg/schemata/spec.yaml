@@ -76,9 +76,9 @@ definitions:
             description: descriptive text for the collection
           - enum:
             - null
-        enable_clustering:
-          type: boolean
-          description: whether to enable clustering for the collection
+      enable_clustering:
+        type: boolean
+        description: whether to enable clustering for the collection
   file_dataset:
     properties:
       dataset_type:
@@ -187,6 +187,46 @@ anyOf:
       - required:
         - imageset_type
         - container_name
+# multiple image sources collection
+- allOf:
+  - $ref: '#/definitions/collection'
+  - collection_version:
+    type: number
+    enum:
+    - 2
+  - oneOf:
+    - allOf:
+      - $ref: '#/definitions/file_dataset'
+      - required:
+        - dataset_type
+        - file_config
+    - allOf:
+      - $ref: '#/definitions/sql_dataset'
+      - required:
+        - dataset_type
+        - sql_config
+  - image_sources:
+      type: array
+      items:
+        type: object
+        properties:
+          source_name:
+            type: string
+          oneOf:
+            - allOf:
+              - $ref: '#/definitions/file_imageset_properties'
+              - required:
+                - file_config
+                - imageset_type
+            - allOf:
+              - $ref: '#/definitions/url_imageset_properties'
+              - required:
+                - imageset_type
+            - allOf:
+              - $ref: '#/definitions/azure_storage_container_properties'
+              - required:
+                - imageset_type
+                - container_name
 # images only collection
 - allOf:
   - $ref: '#/definitions/collection'

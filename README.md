@@ -120,6 +120,35 @@ dataset_column: image_name
 
 If you are using SQL data see below for config
 
+## Create a collection with multiple image sources
+
+```
+# The name of the collection
+name: file based
+description: an example collection with a file based imageset and dataset
+collection_version: 2
+# The type of data set. For now this needs to be set to 'file'.
+dataset_type: file
+file_config:
+    # Path to the dataset file. (optional)
+    path: path/to/file/mydata.csv
+image_sources:
+    # source from file based imageset
+    - paths:
+        - a/directory/path
+      # source_name is a compulsory field. Each source's source_name needs to be unique.
+      source_name: first_source
+      # Name of the column in the dataset that contains the image name. (optional)
+      dataset_column: path
+      imageset_type: file
+    # source from url based imageset
+    - url_template: https://example.com/images/{}?accesscode=abc3e20423423497
+      image_fetch_headers:
+        Accept: image/png
+      source_name: second_source
+      imageset_type: url
+```
+
 ## Update a collection
 Update a collection - *coming soon*.
 

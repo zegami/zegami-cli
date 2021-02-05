@@ -38,6 +38,8 @@ def create(log, session, args):
         log.error('Collection name missing from config file')
         sys.exit(1)
 
+    collection_version = configuration.get('collection_version', 1)
+
     # use name from config
     coll = {
         "name": configuration["name"],
@@ -51,6 +53,19 @@ def create(log, session, args):
     if 'description' in coll and coll["description"] is None:
         coll["description"] = ''
 
+    # check multiple image sources config
+    if collection_version == 2 and 'image_sources' in configuration:
+        coll['version'] = 2
+        coll['image_sources'] = []
+        for source in configuration['image_sources']:
+            if "source_name" not in source:
+                log.error('Image source name missing from config file')
+                sys.exit(1)
+            if source['source_name'] is None:
+                log.error('Image source name cannot be empty')
+                sys.exit(1)
+            coll['image_sources'].append({'name': source['source_name']})
+
     # create the collection
     response_json = http.post_json(session, url, coll)
     log.print_json(response_json, "collection", "post", shorten=False)
@@ -63,12 +78,28 @@ def create(log, session, args):
         if 'path' in dataset_config['file_config'] or 'directory' in dataset_config['file_config']:
             datasets.update_from_dict(log, session, dataset_config)
 
-    imageset_config = dict(
-        configuration, id=coll["imageset_id"]
-    )
-    imageset_config["dataset_id"] = coll["dataset_id"]
-    imageset_config["collection_id"] = coll["id"]
-    imagesets.update_from_dict(log, session, imageset_config)
+    if collection_version == 2:
+        for source in configuration['image_sources']:
+            source_name = source['source_name']
+            imageset_config = dict(source)
+            imageset_config["file_config"] = {}
+            for property in ['paths', 'recursive', 'mime_type']:
+                if property in source:
+                    imageset_config["file_config"][property] = source[property]
+            imageset_config["url"] = configuration["url"]
+            imageset_config["project"] = configuration["project"]
+            imageset_config["dataset_id"] = coll["dataset_id"]
+            imageset_config["collection_id"] = coll["id"]
+            imageset_config["id"] = coll["image_sources"][source_name]["imageset_id"]
+            imagesets.update_from_dict(log, session, imageset_config)
+    else:
+        imageset_config = dict(
+            configuration, id=coll["imageset_id"]
+        )
+        imageset_config["dataset_id"] = coll["dataset_id"]
+        imageset_config["collection_id"] = coll["id"]
+        imagesets.update_from_dict(log, session, imageset_config)
+
     delta_time = datetime.now() - time_start
     log.debug("Collection uploaded in {}".format(delta_time))
 
