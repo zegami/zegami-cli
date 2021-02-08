@@ -344,6 +344,8 @@ collection_id: 5ad3a99b75f3b30001732f36
 dataset_id: 5ad3a99b75f3b30001732f36
 # Name of the column in the dataset that contains the image name
 dataset_column: image_name
+# Only required if this imageset is from a multiple image sources collection
+source_name: first_source
 ```
 
 ### URL imageset
