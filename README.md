@@ -84,7 +84,7 @@ description: an example collection with a file based dataset where images are to
 imageset_type: url
 # Name of the column in the dataset that contains the image url. (optional)
 dataset_column: image_name
-# Url pattern - python format string where {} is the name of the image name (from data file)
+# Url pattern - python format string where {} is the values from the dataset_column in data file
 url_template: https://example.com/images/{}?accesscode=abc3e20423423497
 # Custom headers to add when fetching the image
 image_fetch_headers:
