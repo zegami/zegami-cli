@@ -42,7 +42,7 @@ def create(log, session, args):
 
     # use name from config
     coll = {
-        "name": configuration["name"],
+        "name": str(configuration["name"]),
     }
     # use description and enable_clustering from config
     for key in ["description", "enable_clustering"]:
