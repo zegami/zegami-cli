@@ -92,6 +92,17 @@ definitions:
           - directory
     required:
     - file_config
+  multisrc_file_dataset:
+    properties:
+      dataset_type:
+        enum:
+        - file
+      file_config:
+        oneOf:
+        - required:
+          - path
+        - required:
+          - directory
   sql_dataset:
     properties:
       dataset_type:
@@ -191,20 +202,13 @@ anyOf:
 - allOf:
   - $ref: '#/definitions/collection'
   - collection_version:
-    type: number
-    enum:
-    - 2
+      enum:
+      - 2
   - oneOf:
     - allOf:
-      - $ref: '#/definitions/file_dataset'
-      - required:
-        - dataset_type
-        - file_config
+      - $ref: '#/definitions/multisrc_file_dataset'
     - allOf:
       - $ref: '#/definitions/sql_dataset'
-      - required:
-        - dataset_type
-        - sql_config
   - image_sources:
       type: array
       items:
@@ -214,10 +218,11 @@ anyOf:
             type: string
           oneOf:
             - allOf:
-              - $ref: '#/definitions/file_imageset_properties'
-              - required:
-                - file_config
-                - imageset_type
+              - properties:
+                imageset_type:
+                  enum:
+                  - file      
+                $ref: '#/properties/paths'
             - allOf:
               - $ref: '#/definitions/url_imageset_properties'
               - required:
@@ -227,6 +232,11 @@ anyOf:
               - required:
                 - imageset_type
                 - container_name
+          required:
+            - source_name
+  - required:
+    - collection_version
+    - image_sources
 # images only collection
 - allOf:
   - $ref: '#/definitions/collection'
