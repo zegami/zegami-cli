@@ -90,6 +90,8 @@ definitions:
           - path
         - required:
           - directory
+    required:
+    - file_config
   sql_dataset:
     properties:
       dataset_type:
@@ -126,8 +128,14 @@ anyOf:
 - oneOf:
   - allOf:
     - $ref: '#/definitions/file_dataset'
+    - required:
+      - dataset_type
+      - file_config
   - allOf:
     - $ref: '#/definitions/sql_dataset'
+    - required:
+      - dataset_type
+      - sql_config
 # imageset only
 - oneOf:
   - allOf:
@@ -189,8 +197,14 @@ anyOf:
   - oneOf:
     - allOf:
       - $ref: '#/definitions/file_dataset'
+      - required:
+        - dataset_type
+        - file_config
     - allOf:
       - $ref: '#/definitions/sql_dataset'
+      - required:
+        - dataset_type
+        - sql_config
   - image_sources:
       type: array
       items:
