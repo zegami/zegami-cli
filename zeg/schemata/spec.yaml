@@ -72,10 +72,10 @@ definitions:
         description: name for the collection
       description:
         oneOf:
-          - type: string
-            description: descriptive text for the collection
-          - enum:
-            - null
+        - type: string
+          description: descriptive text for the collection
+        - enum:
+          - null
       enable_clustering:
         type: boolean
         description: whether to enable clustering for the collection
@@ -217,23 +217,23 @@ anyOf:
           source_name:
             type: string
           oneOf:
-            - allOf:
-              - properties:
-                imageset_type:
-                  enum:
-                  - file      
-                $ref: '#/properties/paths'
-            - allOf:
-              - $ref: '#/definitions/url_imageset_properties'
-              - required:
-                - imageset_type
-            - allOf:
-              - $ref: '#/definitions/azure_storage_container_properties'
-              - required:
-                - imageset_type
-                - container_name
+          - allOf:
+            - properties:
+              imageset_type:
+                enum:
+                - file
+              $ref: '#/properties/paths'
+          - allOf:
+            - $ref: '#/definitions/url_imageset_properties'
+            - required:
+              - imageset_type
+          - allOf:
+            - $ref: '#/definitions/azure_storage_container_properties'
+            - required:
+              - imageset_type
+              - container_name
           required:
-            - source_name
+          - source_name
   - required:
     - collection_version
     - image_sources
