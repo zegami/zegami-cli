@@ -92,17 +92,6 @@ definitions:
           - directory
     required:
     - file_config
-  multisrc_file_dataset:
-    properties:
-      dataset_type:
-        enum:
-        - file
-      file_config:
-        oneOf:
-        - required:
-          - path
-        - required:
-          - directory
   sql_dataset:
     properties:
       dataset_type:
@@ -206,7 +195,7 @@ anyOf:
       - 2
   - oneOf:
     - allOf:
-      - $ref: '#/definitions/multisrc_file_dataset'
+      - $ref: '#/definitions/file_dataset'
     - allOf:
       - $ref: '#/definitions/sql_dataset'
   - image_sources:
