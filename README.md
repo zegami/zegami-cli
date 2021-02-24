@@ -130,7 +130,7 @@ collection_version: 2
 # The type of data set. For now this needs to be set to 'file'.
 dataset_type: file
 file_config:
-    # Path to the dataset file. (optional)
+    # Path to the dataset file.
     path: path/to/file/mydata.csv
 image_sources:
     # source from file based imageset

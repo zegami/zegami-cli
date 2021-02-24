@@ -72,10 +72,10 @@ definitions:
         description: name for the collection
       description:
         oneOf:
-          - type: string
-            description: descriptive text for the collection
-          - enum:
-            - null
+        - type: string
+          description: descriptive text for the collection
+        - enum:
+          - null
       enable_clustering:
         type: boolean
         description: whether to enable clustering for the collection
@@ -191,20 +191,13 @@ anyOf:
 - allOf:
   - $ref: '#/definitions/collection'
   - collection_version:
-    type: number
-    enum:
-    - 2
+      enum:
+      - 2
   - oneOf:
     - allOf:
       - $ref: '#/definitions/file_dataset'
-      - required:
-        - dataset_type
-        - file_config
     - allOf:
       - $ref: '#/definitions/sql_dataset'
-      - required:
-        - dataset_type
-        - sql_config
   - image_sources:
       type: array
       items:
@@ -213,20 +206,26 @@ anyOf:
           source_name:
             type: string
           oneOf:
-            - allOf:
-              - $ref: '#/definitions/file_imageset_properties'
-              - required:
-                - file_config
-                - imageset_type
-            - allOf:
-              - $ref: '#/definitions/url_imageset_properties'
-              - required:
-                - imageset_type
-            - allOf:
-              - $ref: '#/definitions/azure_storage_container_properties'
-              - required:
-                - imageset_type
-                - container_name
+          - allOf:
+            - properties:
+              imageset_type:
+                enum:
+                - file
+              $ref: '#/properties/paths'
+          - allOf:
+            - $ref: '#/definitions/url_imageset_properties'
+            - required:
+              - imageset_type
+          - allOf:
+            - $ref: '#/definitions/azure_storage_container_properties'
+            - required:
+              - imageset_type
+              - container_name
+          required:
+          - source_name
+  - required:
+    - collection_version
+    - image_sources
 # images only collection
 - allOf:
   - $ref: '#/definitions/collection'
