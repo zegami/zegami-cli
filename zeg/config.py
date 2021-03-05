@@ -23,6 +23,7 @@ def parse_args(args, log):
 def parse_config(path, log):
     """Parse yaml collection configuration."""
     configuration = load_config(path)
+    configuration['name'] = str(configuration['name'])
     validate_config(configuration, log)
     return configuration
 
