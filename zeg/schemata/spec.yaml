@@ -79,6 +79,11 @@ definitions:
       enable_clustering:
         type: boolean
         description: whether to enable clustering for the collection
+      enable_image_info:
+        type: boolean
+        description: whether to enable image info for the collection
+    required:
+    - name
   file_dataset:
     properties:
       dataset_type:
