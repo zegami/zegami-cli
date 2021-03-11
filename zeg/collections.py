@@ -45,7 +45,7 @@ def create(log, session, args):
         "name": configuration["name"],
     }
     # use description and enable_clustering from config
-    for key in ["description", "enable_clustering"]:
+    for key in ["description", "enable_clustering", "enable_image_info"]:
         if key in configuration:
             coll[key] = configuration[key]
 

@@ -79,6 +79,8 @@ definitions:
       enable_clustering:
         type: boolean
         description: whether to enable clustering for the collection
+    required:
+    - name
   file_dataset:
     properties:
       dataset_type:
@@ -190,6 +192,8 @@ anyOf:
 # multiple image sources collection
 - allOf:
   - $ref: '#/definitions/collection'
+  - enable_image_info:
+    type: boolean
   - collection_version:
       enum:
       - 2
