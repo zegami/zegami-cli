@@ -90,9 +90,9 @@ def create(log, session, args):
             imageset_config["project"] = configuration["project"]
             imageset_config["dataset_id"] = coll["dataset_id"]
             imageset_config["collection_id"] = coll["id"]
-            for source in coll["image_sources"]:
-                if source['source_id'] == source_name:
-                    imageset_config["id"] = source["imageset_id"]
+            for coll_source in coll["image_sources"]:
+                if coll_source['name'] == source_name:
+                    imageset_config["id"] = coll_source["imageset_id"]
             imagesets.update_from_dict(log, session, imageset_config)
     else:
         imageset_config = dict(
