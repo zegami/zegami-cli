@@ -38,7 +38,7 @@ setup(
         'azure-storage-blob==12.3.0',
         'colorama==0.4.3',
         'jsonschema==3.2.0',
-        'PyYaml==5.3.1',
+        'PyYaml==5.4',
         'requests<3.0,>=2.15.0',
         'tqdm==4.43.0',
     ],
