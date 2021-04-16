@@ -6,6 +6,8 @@ import concurrent.futures
 import os
 import uuid
 
+import azure.storage.blob
+
 from colorama import Fore, Style
 from tqdm import tqdm
 
@@ -25,6 +27,7 @@ MIMES = {
     ".tif": "image/tiff",
     ".tiff": "image/tiff",
     ".dcm": "application/dicom",
+    # TODO add WSI mime types?
 }
 
 BLACKLIST = (
@@ -113,6 +116,7 @@ def _upload_image_chunked(paths, session, create_url, complete_url, log, workloa
         return
 
     index = 0
+
     for fpath in paths:
         try:
             file_name = os.path.basename(fpath)
@@ -136,14 +140,37 @@ def _upload_image_chunked(paths, session, create_url, complete_url, log, workloa
             }
             index = index + 1
             try:
-                # Post file to storage location
+                # # Post file to storage location
+                # url = signed_urls[blob_id]
+                # # google based signed urls come as a relative path
+                # if url.startswith("/"):
+                #     url = 'https://storage.googleapis.com{}'.format(url)
+                # http.put_file(session, url, f, file_mime)
+                # # pop the info into a temp array, upload only once later
+                # results.append(info["image"])
+
                 url = signed_urls[blob_id]
-                # google based signed urls come as a relative path
-                if url.startswith("/"):
-                    url = 'https://storage.googleapis.com{}'.format(url)
-                http.put_file(session, url, f, file_mime)
-                # pop the info into a temp array, upload only once later
+
+                # get SAS token from url
+
+                # https://zegstore.blob.core.windows.net/staging-idupfsff/c0f77657-81e7-45c7-beb4-bed9df8fa808?se=2021-04-16T20%3A26%3A01Z&sp=rw&sv=2019-07-07&sr=b&sig=aVttfgNAwknKvuesO9rLQwXdaeilYFHGt19/o2TXnoU%3D
+
+                sas_token = url.split('?')[-1]
+
+                print('sas_token', sas_token)
+
+                # create blob storage client
+                account_url = "https://zegstore.blob.core.windows.net"
+                container_name = "staging-idupfsff"
+
+                blob_client = azure.storage.blob.ContainerClient(account_url, container_name, credential=sas_token)
+
+                # upload blob using client
+                blob_client.upload_blob(blob_id, f)
+
+                # append results
                 results.append(info["image"])
+
             except Exception as ex:
                 log.error("File upload failed: {}".format(ex))
 
