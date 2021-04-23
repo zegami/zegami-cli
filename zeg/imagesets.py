@@ -5,11 +5,13 @@
 import concurrent.futures
 import os
 import uuid
+from urllib.parse import urlparse
 
 import azure.storage.blob
 
 from colorama import Fore, Style
 from tqdm import tqdm
+
 
 from . import (
     config,
@@ -150,18 +152,19 @@ def _upload_image_chunked(paths, session, create_url, complete_url, log, workloa
                 # results.append(info["image"])
 
                 url = signed_urls[blob_id]
+                url_object = urlparse(url)
 
                 # get SAS token from url
 
                 # https://zegstore.blob.core.windows.net/staging-idupfsff/c0f77657-81e7-45c7-beb4-bed9df8fa808?se=2021-04-16T20%3A26%3A01Z&sp=rw&sv=2019-07-07&sr=b&sig=aVttfgNAwknKvuesO9rLQwXdaeilYFHGt19/o2TXnoU%3D
 
-                sas_token = url.split('?')[-1]
+                sas_token = url_object.query
 
                 print('sas_token', sas_token)
 
                 # create blob storage client
-                account_url = "https://zegstore.blob.core.windows.net"
-                container_name = "staging-idupfsff"
+                account_url = url_object.scheme + '://' + url_object.netloc
+                container_name = url_object.path.split('/')[1]
 
                 blob_client = azure.storage.blob.ContainerClient(account_url, container_name, credential=sas_token)
 
