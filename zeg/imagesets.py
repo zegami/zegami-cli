@@ -8,9 +8,7 @@ import uuid
 from urllib.parse import urlparse
 
 import azure.storage.blob
-
 from colorama import Fore, Style
-
 from tqdm import tqdm
 
 
