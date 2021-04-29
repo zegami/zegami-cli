@@ -10,12 +10,13 @@ from urllib.parse import urlparse
 import azure.storage.blob
 
 from colorama import Fore, Style
+
 from tqdm import tqdm
 
 
 from . import (
-    config,
     azure_blobs,
+    config,
     http,
 )
 
