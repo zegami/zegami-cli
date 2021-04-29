@@ -142,37 +142,32 @@ def _upload_image_chunked(paths, session, create_url, complete_url, log, workloa
             }
             index = index + 1
             try:
-                # # Post file to storage location
-                # url = signed_urls[blob_id]
-                # # google based signed urls come as a relative path
-                # if url.startswith("/"):
-                #     url = 'https://storage.googleapis.com{}'.format(url)
-                # http.put_file(session, url, f, file_mime)
-                # # pop the info into a temp array, upload only once later
-                # results.append(info["image"])
-
+                # Post file to storage location
                 url = signed_urls[blob_id]
-                url_object = urlparse(url)
 
-                # get SAS token from url
+                # TODO fetch project storage location to decide this
+                is_gcp_storage = url.startswith("/")
 
-                # https://zegstore.blob.core.windows.net/staging-idupfsff/c0f77657-81e7-45c7-beb4-bed9df8fa808?se=2021-04-16T20%3A26%3A01Z&sp=rw&sv=2019-07-07&sr=b&sig=aVttfgNAwknKvuesO9rLQwXdaeilYFHGt19/o2TXnoU%3D
+                if is_gcp_storage:
+                    url = 'https://storage.googleapis.com{}'.format(url)
+                    http.put_file(session, url, f, file_mime)
+                    # pop the info into a temp array, upload only once later
+                    results.append(info["image"])
 
-                sas_token = url_object.query
+                else:
+                    url = signed_urls[blob_id]
+                    url_object = urlparse(url)
 
-                print('sas_token', sas_token)
+                    # get SAS token from url
+                    sas_token = url_object.query
+                    account_url = url_object.scheme + '://' + url_object.netloc
+                    container_name = url_object.path.split('/')[1]
 
-                # create blob storage client
-                account_url = url_object.scheme + '://' + url_object.netloc
-                container_name = url_object.path.split('/')[1]
+                    # upload blob using client
+                    blob_client = azure.storage.blob.ContainerClient(account_url, container_name, credential=sas_token)
+                    blob_client.upload_blob(blob_id, f)
 
-                blob_client = azure.storage.blob.ContainerClient(account_url, container_name, credential=sas_token)
-
-                # upload blob using client
-                blob_client.upload_blob(blob_id, f)
-
-                # append results
-                results.append(info["image"])
+                    results.append(info["image"])
 
             except Exception as ex:
                 log.error("File upload failed: {}".format(ex))
