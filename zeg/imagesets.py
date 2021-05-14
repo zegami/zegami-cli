@@ -61,7 +61,7 @@ def get(log, session, args):
 
 def _get_chunk_upload_futures(
     executor, paths, session, create_url,
-    complete_url, log, workload_size, offset, mime
+    complete_url, log, workload_size, offset, mime, use_azure_client
 ):
     """Return executable tasks with image uploads in batches.
 
@@ -92,7 +92,8 @@ def _get_chunk_upload_futures(
                 complete_url,
                 log,
                 workload_info,
-                mime
+                mime,
+                use_azure_client,
             ))
             temp = []
 
@@ -105,7 +106,7 @@ def _finish_replace_empty_imageset(session, replace_empty_url):
     http.post_json(session, replace_empty_url, {})
 
 
-def _upload_image_chunked(paths, session, create_url, complete_url, log, workload_info, mime):  # noqa: E501
+def _upload_image_chunked(paths, session, create_url, complete_url, log, workload_info, mime, use_azure_client=False):  # noqa: E501
     results = []
 
     # get all signed urls at once
@@ -144,19 +145,8 @@ def _upload_image_chunked(paths, session, create_url, complete_url, log, workloa
                 # Post file to storage location
                 url = signed_urls[blob_id]
 
-                # TODO fetch project storage location to decide this
-                is_gcp_storage = url.startswith("/")
-
-                if is_gcp_storage:
-                    url = 'https://storage.googleapis.com{}'.format(url)
-                    http.put_file(session, url, f, file_mime)
-                    # pop the info into a temp array, upload only once later
-                    results.append(info["image"])
-
-                else:
-                    url = signed_urls[blob_id]
+                if use_azure_client:
                     url_object = urlparse(url)
-
                     # get SAS token from url
                     sas_token = url_object.query
                     account_url = url_object.scheme + '://' + url_object.netloc
@@ -166,6 +156,14 @@ def _upload_image_chunked(paths, session, create_url, complete_url, log, workloa
                     blob_client = azure.storage.blob.ContainerClient(account_url, container_name, credential=sas_token)
                     blob_client.upload_blob(blob_id, f)
 
+                    results.append(info["image"])
+                else:
+                    # TODO fetch project storage location to decide this
+                    is_gcp_storage = url.startswith("/")
+                    if is_gcp_storage:
+                        url = 'https://storage.googleapis.com{}'.format(url)
+                    http.put_file(session, url, f, file_mime)
+                    # pop the info into a temp array, upload only once later
                     results.append(info["image"])
 
             except Exception as ex:
@@ -232,6 +230,8 @@ def _update_file_imageset(log, session, configuration):
     if workload_size != 1:
         log.warn("The progress bar may have reduced accuracy when uploading larger imagesets.")  # noqa: E501
 
+    use_azure_client = configuration.get('use_wsi', False)
+
     with concurrent.futures.ThreadPoolExecutor(http.CONCURRENCY) as executor:
         futures = _get_chunk_upload_futures(
             executor,
@@ -242,7 +242,8 @@ def _update_file_imageset(log, session, configuration):
             log,
             workload_size,
             add_offset,
-            mime_type
+            mime_type,
+            use_azure_client,
         )
         kwargs = {
             'total': len(futures),
