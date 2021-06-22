@@ -7,7 +7,10 @@ import os
 import uuid
 from urllib.parse import urlparse
 
-import azure.storage.blob
+from azure.storage.blob import (
+    ContainerClient,
+    ContentSettings,
+)
 from colorama import Fore, Style
 from tqdm import tqdm
 
@@ -153,8 +156,12 @@ def _upload_image_chunked(paths, session, create_url, complete_url, log, workloa
                     container_name = url_object.path.split('/')[1]
 
                     # upload blob using client
-                    blob_client = azure.storage.blob.ContainerClient(account_url, container_name, credential=sas_token)
-                    blob_client.upload_blob(blob_id, f)
+                    blob_client = ContainerClient(account_url, container_name, credential=sas_token)
+                    blob_client.upload_blob(
+                        blob_id,
+                        f,
+                        content_settings=ContentSettings(content_type=file_mime)
+                    )
 
                     results.append(info["image"])
                 else:
@@ -353,8 +360,7 @@ def update_from_dict(log, session, configuration):
         _update_to_url_imageset(session, configuration, ims_url)
     elif ims_type == "file":
         if preemptive_join:
-            _update_join_dataset(
-                log, configuration, dataset_id, dataset_column, session, collection_id)
+            _update_join_dataset(log, configuration, dataset_id, dataset_column, session, collection_id)
         _update_file_imageset(log, session, configuration)
     elif ims_type == "azure_storage_container":
         if os.environ.get('AZURE_STORAGE_CONNECTION_STRING', None) is None:
@@ -362,12 +368,10 @@ def update_from_dict(log, session, configuration):
                 "The AZURE_STORAGE_CONNECTION_STRING environment variable"
                 " must be set in order to create an azure storage collection"
             )
-        configuration["url_template"] = azure_blobs.generate_signed_url(
-            configuration["container_name"])
+        configuration["url_template"] = azure_blobs.generate_signed_url(configuration["container_name"])
         _update_to_url_imageset(session, configuration, ims_url)
     if not preemptive_join:
-        _update_join_dataset(
-            log, configuration, dataset_id, dataset_column, session, collection_id)
+        _update_join_dataset(log, configuration, dataset_id, dataset_column, session, collection_id)
 
 
 def _update_to_url_imageset(session, configuration, ims_url):
