@@ -15,7 +15,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='zegami-cli',
-    version='1.5.1',
+    version='1.5.2',
     description='Command Line Interface for Zegami',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -35,7 +35,7 @@ setup(
     packages=['zeg', 'zeg.tests'],
     install_requires=[
         'appdirs==1.4.3',
-        'azure-storage-blob==12.3.0',
+        'azure-storage-blob>=12.8.1',
         'colorama==0.4.3',
         'jsonschema==3.2.0',
         'PyYaml==5.4',
