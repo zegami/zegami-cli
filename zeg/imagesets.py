@@ -64,7 +64,8 @@ def get(log, session, args):
 
 def _get_chunk_upload_futures(
     executor, paths, session, create_url,
-    complete_url, log, workload_size, offset, mime, use_azure_client
+    complete_url, log, workload_size, offset, mime, use_azure_client,
+    imageset_id
 ):
     """Return executable tasks with image uploads in batches.
 
@@ -97,6 +98,7 @@ def _get_chunk_upload_futures(
                 workload_info,
                 mime,
                 use_azure_client,
+                imageset_id,
             ))
             temp = []
 
@@ -109,12 +111,15 @@ def _finish_replace_empty_imageset(session, replace_empty_url):
     http.post_json(session, replace_empty_url, {})
 
 
-def _upload_image_chunked(paths, session, create_url, complete_url, log, workload_info, mime, use_azure_client=False):  # noqa: E501
+def _upload_image_chunked(paths, session, create_url, complete_url, log, workload_info, mime, use_azure_client=False, imageset_id=None):  # noqa: E501
     results = []
 
     # get all signed urls at once
     try:
-        id_set = {"ids": [str(uuid.uuid4()) for path in paths]}
+        if imageset_id:
+            id_set = {"ids": [f'imagesets/{imageset_id}/{str(uuid.uuid4())}' for path in paths]}
+        else:
+            id_set = {"ids": [str(uuid.uuid4()) for path in paths]}
         signed_urls = http.post_json(session, create_url, id_set)
     except Exception as ex:
         log.error("Could not get signed urls for image uploads: {}".format(ex))
@@ -251,6 +256,7 @@ def _update_file_imageset(log, session, configuration):
             add_offset,
             mime_type,
             use_azure_client,
+            configuration["id"],
         )
         kwargs = {
             'total': len(futures),
