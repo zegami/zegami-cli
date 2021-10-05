@@ -71,7 +71,7 @@ def update_from_dict(log, session, configuration):
     file_name = os.path.basename(file_path)
 
     with open(file_path, 'rb') as f:
-        blob_id = str(uuid.uuid4())
+        blob_id = f'datasets/{configuration["id"]}/{str(uuid.uuid4())}'
         info = {
             "image": {
                 "blob_id": blob_id,
