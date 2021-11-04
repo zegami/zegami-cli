@@ -142,7 +142,7 @@ def _sql_type_update(log, sql_config):
         fd, name = mkstemp(suffix=mime_type, prefix='zeg-dataset')
         with open(fd, 'w') as output:
             # write headers
-            output.write(",".join([key for key in result.keys()]))
+            output.write(','.join([key for key in result.keys()])+'\n')
             for row in result:
                 row_as_string = [_handle_sql_types(value) for value in row]
                 output.write(str(row_as_string)[1:-1] + '\n')
