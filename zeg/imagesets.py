@@ -386,17 +386,17 @@ def _update_to_url_imageset(session, configuration, ims_url):
         key: configuration.get(key)
         for key in keys if key in configuration
     }
-    fetch_source = {
+    transfer = {
         "url": url_conf,
     }
     if 'image_fetch_headers' in configuration:
-        fetch_source['headers'] = configuration['image_fetch_headers']
+        transfer['headers'] = configuration['image_fetch_headers']
 
     ims = {
         "name": "Imageset created by CLI",
         "source": {
             "dataset_id": configuration['dataset_id'],
-            "fetch": fetch_source
+            "transfer": transfer
         }
     }
     http.put_json(session, ims_url, ims)

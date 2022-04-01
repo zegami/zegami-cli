@@ -23,7 +23,7 @@ class ImagesetTestCase(HTTPBaseTestCase):
             'source':
                 {
                     'dataset_id': "my ds id",
-                    'fetch':
+                    'transfer':
                         {
                             'url': {
                                 'dataset_column': 'foo'}
