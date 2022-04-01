@@ -1,5 +1,5 @@
 flake8==3.7.9
-git+git://github.com/bz2/flake8-copyright@fea8229#egg=flake8-copyright
+flake8-copyright==0.2.2
 flake8-docstrings==1.5.0
 flake8-import-order==0.18.1
 yamllint==1.20.0
