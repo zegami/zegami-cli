@@ -14,6 +14,7 @@ class ImagesetTestCase(HTTPBaseTestCase):
             }
         })
         ims_url = "test:my-test"
+        collection_id = "test-collection-id"
         configuration = {
             "dataset_column": "foo",
             'dataset_id': "my ds id"
@@ -28,11 +29,13 @@ class ImagesetTestCase(HTTPBaseTestCase):
                             'url': {
                                 'dataset_column': 'foo'}
                         }
-                }
+                },
+            'processing_category': 'imageset',
+            'node_groups': ['collection_{}'.format(collection_id)]
         }
 
         imagesets._update_to_url_imageset(
-            session, configuration, ims_url
+            session, configuration, ims_url, collection_id
         )
         self.assertEqual(
             session.adapters["test:"].log,
