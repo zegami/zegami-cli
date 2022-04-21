@@ -30,7 +30,7 @@ class ImagesetTestCase(HTTPBaseTestCase):
                                 'dataset_column': 'foo'}
                         }
                 },
-            'processing_category': 'imageset',
+            'processing_category': 'upload',
             'node_groups': ['collection_{}'.format(collection_id)]
         }
 

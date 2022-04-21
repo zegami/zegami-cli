@@ -398,8 +398,8 @@ def _update_to_url_imageset(session, configuration, ims_url, collection_id):
             "dataset_id": configuration['dataset_id'],
             "transfer": transfer
         },
-        "processing_category": 'imageset',
-        "node_groups": ['collection_{}'.format(collection_id)]
+        'processing_category': 'upload',
+        'node_groups': ['collection_{}'.format(collection_id)]
     }
     http.put_json(session, ims_url, ims)
 
