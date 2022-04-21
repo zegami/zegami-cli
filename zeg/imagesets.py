@@ -363,7 +363,7 @@ def update_from_dict(log, session, configuration):
     ims = http.get(session, ims_url)["imageset"]
     check_can_update(ims_type, ims)
     if ims_type == "url":
-        _update_to_url_imageset(session, configuration, ims_url)
+        _update_to_url_imageset(session, configuration, ims_url, collection_id)
     elif ims_type == "file":
         if preemptive_join:
             _update_join_dataset(log, configuration, dataset_id, dataset_column, session, collection_id)
@@ -375,12 +375,12 @@ def update_from_dict(log, session, configuration):
                 " must be set in order to create an azure storage collection"
             )
         configuration["url_template"] = azure_blobs.generate_signed_url(configuration["container_name"])
-        _update_to_url_imageset(session, configuration, ims_url)
+        _update_to_url_imageset(session, configuration, ims_url, collection_id)
     if not preemptive_join:
         _update_join_dataset(log, configuration, dataset_id, dataset_column, session, collection_id)
 
 
-def _update_to_url_imageset(session, configuration, ims_url):
+def _update_to_url_imageset(session, configuration, ims_url, collection_id):
     keys = ["dataset_column", "url_template"]
     url_conf = {
         key: configuration.get(key)
@@ -397,7 +397,9 @@ def _update_to_url_imageset(session, configuration, ims_url):
         "source": {
             "dataset_id": configuration['dataset_id'],
             "transfer": transfer
-        }
+        },
+        "processing_category": 'imageset',
+        "node_groups": ['collection_{}'.format(collection_id)]
     }
     http.put_json(session, ims_url, ims)
 
